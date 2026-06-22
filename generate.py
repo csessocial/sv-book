@@ -49,213 +49,289 @@ def generate_html(books: list[dict], output_path: str, total_raw: int = 0):
 <title>SV Book — {now}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=Noto+Serif+KR:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 *{{box-sizing:border-box;margin:0;padding:0}}
 :root{{
-  --navy:#0a1628;
-  --navy2:#1a2e4a;
-  --accent:#1d6fa4;
-  --accent2:#e8f4fb;
-  --text:#1a1a2e;
-  --text2:#4a5568;
-  --text3:#8a9ab5;
-  --bg:#f7f8fc;
-  --white:#ffffff;
-  --border:#e8ecf3;
+  --ink:#0d1117;
+  --ink2:#24292f;
+  --ink3:#57606a;
+  --ink4:#8c959f;
+  --bg:#ffffff;
+  --bg2:#f6f8fa;
+  --border:#d0d7de;
+  --accent:#0969da;
+  --accent-light:#ddf4ff;
+  --green:#1a7f37;
+  --purple:#8250df;
+  --orange:#bc4c00;
+  --red:#cf222e;
   --radius:12px;
+  --serif:'Noto Serif KR',serif;
+  --sans:'Noto Sans KR',sans-serif;
 }}
-body{{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-weight:400;-webkit-font-smoothing:antialiased}}
+html{{scroll-behavior:smooth}}
+body{{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;overflow-x:hidden}}
 
-/* ── 헤더 ── */
-.site-header{{background:var(--navy);color:white}}
-.header-inner{{max-width:1400px;margin:0 auto;padding:0 48px;display:flex;align-items:center;justify-content:space-between;height:64px}}
-.logo{{font-size:1.05rem;font-weight:700;letter-spacing:-.3px;display:flex;align-items:center;gap:10px}}
-.logo-dot{{width:8px;height:8px;border-radius:50%;background:#4fc3f7;flex-shrink:0}}
-.header-meta{{font-size:.73rem;color:rgba(255,255,255,.4);font-weight:300}}
-.btn-csv{{background:transparent;border:1px solid rgba(255,255,255,.28);color:rgba(255,255,255,.85);padding:7px 18px;border-radius:20px;font-family:'Noto Sans KR',sans-serif;font-size:.76rem;font-weight:500;cursor:pointer;transition:all .2s;letter-spacing:-.1px;white-space:nowrap}}
-.btn-csv:hover{{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.55)}}
-.btn-refresh{{background:transparent;border:1px solid rgba(255,255,255,.28);color:rgba(255,255,255,.85);padding:7px 18px;border-radius:20px;font-family:'Noto Sans KR',sans-serif;font-size:.76rem;font-weight:500;cursor:pointer;transition:all .2s;letter-spacing:-.1px;white-space:nowrap;display:flex;align-items:center;gap:6px}}
-.btn-refresh:hover{{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.55)}}
-.btn-refresh.loading{{opacity:.6;pointer-events:none}}
-/* 재수집 모달 */
-.modal-bg{{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1000;align-items:center;justify-content:center}}
-.modal-bg.show{{display:flex}}
-.modal{{background:white;border-radius:16px;padding:32px 36px;max-width:460px;width:90%;box-shadow:0 24px 60px rgba(0,0,0,.2)}}
-.modal h2{{font-size:1.05rem;font-weight:700;color:var(--navy);margin-bottom:8px;letter-spacing:-.3px}}
-.modal p{{font-size:.82rem;color:var(--text2);line-height:1.7;margin-bottom:20px;font-weight:300}}
-.modal-status{{font-size:.8rem;padding:12px 16px;border-radius:8px;margin-bottom:20px;display:none}}
-.modal-status.ok{{background:#d1fae5;color:#065f46}}
-.modal-status.err{{background:#fee2e2;color:#991b1b}}
-.modal-btns{{display:flex;gap:10px;justify-content:flex-end}}
-.mbtn{{padding:9px 20px;border-radius:8px;font-family:'Noto Sans KR',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;border:none;transition:all .15s}}
-.mbtn-primary{{background:var(--navy);color:white}}
-.mbtn-primary:hover{{background:#1a2e4a}}
-.mbtn-secondary{{background:#f3f4f6;color:var(--text2)}}
-.mbtn-secondary:hover{{background:#e5e7eb}}
+/* ── 네비게이션 ── */
+.nav{{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-bottom:1px solid rgba(208,215,222,.6);transition:box-shadow .2s}}
+.nav.scrolled{{box-shadow:0 1px 20px rgba(0,0,0,.06)}}
+.nav-inner{{max-width:1320px;margin:0 auto;padding:0 40px;height:60px;display:flex;align-items:center;justify-content:space-between;gap:20px}}
+.nav-logo{{font-family:var(--serif);font-size:1.15rem;font-weight:700;color:var(--ink);letter-spacing:-.3px;white-space:nowrap}}
+.nav-logo span{{color:var(--accent)}}
+.nav-meta{{font-size:.72rem;color:var(--ink4);font-weight:300;white-space:nowrap}}
+.nav-actions{{display:flex;gap:8px;align-items:center}}
+.nav-btn{{padding:6px 16px;border-radius:6px;font-family:var(--sans);font-size:.75rem;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--bg);color:var(--ink2);transition:all .15s;white-space:nowrap}}
+.nav-btn:hover{{background:var(--bg2);border-color:var(--ink3)}}
+.nav-btn.primary{{background:var(--ink);color:white;border-color:var(--ink)}}
+.nav-btn.primary:hover{{background:var(--ink2)}}
 
-/* ── 안내 배너 ── */
-.intro-banner{{background:white;border-bottom:1px solid var(--border)}}
-.intro-inner{{max-width:1400px;margin:0 auto;padding:40px 48px;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}}
-@media(max-width:900px){{.intro-inner{{grid-template-columns:1fr;gap:28px}}}}
-.intro-label{{font-size:.68rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--accent);margin-bottom:12px}}
-.intro-heading{{font-size:1.55rem;font-weight:700;color:var(--navy);line-height:1.35;letter-spacing:-.5px;margin-bottom:14px}}
-.intro-desc{{font-size:.84rem;color:var(--text2);line-height:1.8;font-weight:300}}
-.intro-cats{{display:grid;grid-template-columns:1fr 1fr;gap:14px}}
-.intro-cat{{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;border-radius:10px;border:1.5px solid var(--border)}}
-.ic-tech{{border-color:#ede9fe;background:#faf8ff}}
-.ic-esg{{border-color:#d1fae5;background:#f0fdf9}}
-.ic-social{{border-color:#fee2e2;background:#fff8f8}}
-.ic-geo{{border-color:#fef3c7;background:#fffdf0}}
-.ic-icon{{font-size:1.3rem;flex-shrink:0;margin-top:1px}}
-.ic-name{{font-size:.78rem;font-weight:700;color:var(--navy);margin-bottom:3px;letter-spacing:-.2px}}
-.ic-desc{{font-size:.71rem;color:var(--text3);line-height:1.5;font-weight:300}}
+/* ── 히어로 ── */
+.hero{{margin-top:60px;background:var(--ink);min-height:520px;display:grid;grid-template-columns:1fr 1fr;position:relative;overflow:hidden}}
+@media(max-width:860px){{.hero{{grid-template-columns:1fr;min-height:auto}}}}
+.hero-bg{{position:absolute;inset:0;background:radial-gradient(ellipse at 70% 50%, rgba(9,105,218,.25) 0%, transparent 65%),radial-gradient(ellipse at 10% 80%, rgba(130,80,223,.15) 0%, transparent 60%);pointer-events:none}}
+.hero-content{{position:relative;z-index:1;padding:72px 56px 72px 80px;display:flex;flex-direction:column;justify-content:center}}
+@media(max-width:860px){{.hero-content{{padding:48px 32px}}}}
+.hero-eyebrow{{font-size:.68rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#4fc3f7;margin-bottom:20px;display:flex;align-items:center;gap:10px}}
+.hero-eyebrow::before{{content:'';width:28px;height:2px;background:#4fc3f7}}
+.hero-title{{font-family:var(--serif);font-size:2.6rem;font-weight:700;color:white;line-height:1.22;letter-spacing:-.5px;margin-bottom:20px}}
+@media(max-width:1100px){{.hero-title{{font-size:2rem}}}}
+.hero-desc{{font-size:.9rem;color:rgba(255,255,255,.6);line-height:1.85;font-weight:300;max-width:420px;margin-bottom:36px}}
+.hero-cats{{display:flex;flex-wrap:wrap;gap:10px}}
+.hero-cat{{padding:7px 16px;border-radius:20px;font-size:.74rem;font-weight:600;border:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.8);cursor:pointer;transition:all .18s;background:rgba(255,255,255,.06)}}
+.hero-cat:hover,.hero-cat.active{{color:white;border-color:rgba(255,255,255,.5);background:rgba(255,255,255,.14)}}
+.hero-cat[data-cat="Tech & Future"].active{{background:rgba(130,80,223,.4);border-color:#a78bfa}}
+.hero-cat[data-cat="ESG & Sustainability"].active{{background:rgba(26,127,55,.4);border-color:#6ee7b7}}
+.hero-cat[data-cat="Social & Human"].active{{background:rgba(207,34,46,.35);border-color:#fca5a5}}
+.hero-cat[data-cat="Geopolitics & Strategy"].active{{background:rgba(188,76,0,.4);border-color:#fcd34d}}
+.hero-visual{{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;padding:48px 56px 48px 0;gap:20px}}
+@media(max-width:860px){{.hero-visual{{display:none}}}}
+.hero-book{{flex-shrink:0;transition:transform .3s}}
+.hero-book:hover{{transform:translateY(-6px) rotate(-1deg)}}
+.hero-book img{{border-radius:8px;box-shadow:0 24px 60px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.08);display:block;object-fit:cover}}
+.hero-book-main img{{width:160px;height:240px}}
+.hero-book-sub img{{width:110px;height:165px;opacity:.75}}
 
-/* ── 히어로 TOP5 ── */
-.hero{{background:var(--navy2);padding:44px 48px 36px}}
-.hero-inner{{max-width:1400px;margin:0 auto}}
-.hero-label{{font-size:.68rem;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:#4fc3f7;margin-bottom:12px}}
-.hero-title{{font-size:1.45rem;font-weight:700;color:white;margin-bottom:30px;letter-spacing:-.5px}}
-.rec-grid{{display:grid;grid-template-columns:repeat(5,1fr);gap:18px}}
-@media(max-width:960px){{.rec-grid{{grid-template-columns:repeat(3,1fr)}}}}
-@media(max-width:580px){{.rec-grid{{grid-template-columns:repeat(2,1fr)}}}}
-.rec-card{{background:rgba(255,255,255,.07);border-radius:10px;overflow:hidden;transition:all .22s;text-decoration:none;color:white;border:1px solid rgba(255,255,255,.1);display:block}}
-.rec-card:hover{{background:rgba(255,255,255,.13);transform:translateY(-5px);box-shadow:0 16px 40px rgba(0,0,0,.4)}}
-.rec-card-img{{width:100%;aspect-ratio:2/3;object-fit:cover;display:block;background:#243550}}
-.rec-card-body{{padding:13px 14px 16px}}
-.rec-card-cat{{font-size:.6rem;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:7px;opacity:.75}}
-.rec-card-title{{font-size:.81rem;font-weight:600;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:5px;letter-spacing:-.2px}}
-.rec-card-author{{font-size:.69rem;opacity:.45;font-weight:300}}
+/* ── 소개 배너 ── */
+.intro{{background:var(--bg);border-bottom:1px solid var(--border);padding:0}}
+.intro-inner{{max-width:1320px;margin:0 auto;padding:48px 40px;display:grid;grid-template-columns:auto 1fr;gap:60px;align-items:start}}
+@media(max-width:900px){{.intro-inner{{grid-template-columns:1fr;gap:32px}}}}
+.intro-label{{font-size:.67rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--accent);margin-bottom:12px}}
+.intro-heading{{font-family:var(--serif);font-size:1.6rem;font-weight:700;color:var(--ink);line-height:1.35;letter-spacing:-.4px;margin-bottom:12px;white-space:nowrap}}
+.intro-sub{{font-size:.83rem;color:var(--ink3);line-height:1.8;font-weight:300;max-width:340px}}
+.intro-cats{{display:grid;grid-template-columns:1fr 1fr;gap:12px}}
+.icat{{display:flex;align-items:flex-start;gap:12px;padding:16px 18px;border-radius:10px;border:1.5px solid var(--border);transition:all .18s;cursor:pointer}}
+.icat:hover{{border-color:currentColor;transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.06)}}
+.icat-tech{{--c:#8250df}}.icat-esg{{--c:#1a7f37}}.icat-social{{--c:#cf222e}}.icat-geo{{--c:#bc4c00}}
+.icat:hover{{border-color:var(--c)}}
+.icat-icon{{font-size:1.4rem;flex-shrink:0}}
+.icat-name{{font-size:.8rem;font-weight:700;color:var(--ink);margin-bottom:3px}}
+.icat-desc{{font-size:.71rem;color:var(--ink4);line-height:1.55;font-weight:300}}
 
-/* ── 카테고리 탭 ── */
-.cat-nav{{background:var(--white);border-bottom:2px solid var(--border);position:sticky;top:0;z-index:100}}
-.cat-nav-inner{{max-width:1400px;margin:0 auto;padding:0 48px;display:flex;gap:0;overflow-x:auto}}
-.cat-tab{{padding:15px 22px;font-size:.81rem;font-weight:500;color:var(--text3);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .18s;font-family:'Noto Sans KR',sans-serif;white-space:nowrap;letter-spacing:-.2px}}
-.cat-tab:hover{{color:var(--text2)}}
-.cat-tab.active{{color:var(--navy);font-weight:700;border-bottom-color:var(--navy)}}
-.cat-tab[data-cat="Tech & Future"].active{{border-bottom-color:#7c3aed;color:#7c3aed}}
-.cat-tab[data-cat="ESG & Sustainability"].active{{border-bottom-color:#059669;color:#059669}}
-.cat-tab[data-cat="Social & Human"].active{{border-bottom-color:#dc2626;color:#dc2626}}
-.cat-tab[data-cat="Geopolitics & Strategy"].active{{border-bottom-color:#d97706;color:#d97706}}
+/* ── 툴바 (sticky) ── */
+.toolbar-sticky{{position:sticky;top:60px;z-index:100;background:rgba(255,255,255,.95);backdrop-filter:blur(8px);border-bottom:1px solid var(--border)}}
+.toolbar-inner{{max-width:1320px;margin:0 auto;padding:0 40px;display:flex;align-items:center;gap:0;overflow-x:auto}}
+.cat-tab{{padding:14px 20px;font-size:.8rem;font-weight:500;color:var(--ink4);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .18s;font-family:var(--sans);white-space:nowrap;flex-shrink:0}}
+.cat-tab:hover{{color:var(--ink2)}}
+.cat-tab.active{{color:var(--ink);font-weight:700;border-bottom-color:var(--ink)}}
+.cat-tab[data-cat="Tech & Future"].active{{color:var(--purple);border-bottom-color:var(--purple)}}
+.cat-tab[data-cat="ESG & Sustainability"].active{{color:var(--green);border-bottom-color:var(--green)}}
+.cat-tab[data-cat="Social & Human"].active{{color:var(--red);border-bottom-color:var(--red)}}
+.cat-tab[data-cat="Geopolitics & Strategy"].active{{color:var(--orange);border-bottom-color:var(--orange)}}
+.toolbar-sep{{width:1px;height:20px;background:var(--border);flex-shrink:0;margin:0 8px}}
+.search-wrap{{flex:1;min-width:180px;max-width:280px;position:relative;margin-left:auto}}
+.search-wrap input{{width:100%;padding:7px 12px 7px 34px;border:1.5px solid var(--border);border-radius:6px;font-size:.8rem;font-family:var(--sans);outline:none;color:var(--ink);transition:border .15s;background:var(--bg2)}}
+.search-wrap input:focus{{border-color:var(--accent);background:white}}
+.search-wrap svg{{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--ink4);pointer-events:none}}
+.fsel{{padding:7px 12px;border:1.5px solid var(--border);border-radius:6px;font-size:.78rem;font-family:var(--sans);background:var(--bg2);color:var(--ink);cursor:pointer;outline:none;flex-shrink:0}}
 
-/* ── 툴바 ── */
-.controls{{max-width:1400px;margin:0 auto;padding:24px 48px 0;display:flex;gap:12px;flex-wrap:wrap;align-items:center}}
-.search-wrap{{flex:1;min-width:220px;position:relative}}
-.search-wrap svg{{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--text3);pointer-events:none;flex-shrink:0}}
-.search-wrap input{{width:100%;padding:10px 14px 10px 40px;border:1.5px solid var(--border);border-radius:8px;font-size:.84rem;font-family:'Noto Sans KR',sans-serif;outline:none;color:var(--text);background:var(--white);transition:border .15s}}
-.search-wrap input:focus{{border-color:var(--accent)}}
-.search-wrap input::placeholder{{color:var(--text3)}}
-.fsel{{padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:.81rem;font-family:'Noto Sans KR',sans-serif;background:var(--white);color:var(--text);cursor:pointer;outline:none}}
-.sort-row{{max-width:1400px;margin:0 auto;padding:14px 48px 6px;display:flex;gap:8px;align-items:center}}
-.sort-lbl{{font-size:.72rem;color:var(--text3);margin-right:2px}}
-.sort-btn{{padding:5px 14px;border-radius:20px;border:1.5px solid var(--border);background:var(--white);font-size:.72rem;font-family:'Noto Sans KR',sans-serif;color:var(--text2);cursor:pointer;transition:all .15s;font-weight:500}}
-.sort-btn.active{{background:var(--navy);color:white;border-color:var(--navy)}}
-.stats-row{{max-width:1400px;margin:0 auto;padding:8px 48px 18px;font-size:.76rem;color:var(--text3)}}
-.stats-row b{{color:var(--navy);font-weight:600}}
+/* ── 통계 + 정렬 바 ── */
+.meta-bar{{max-width:1320px;margin:0 auto;padding:16px 40px 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}}
+.meta-count{{font-size:.78rem;color:var(--ink3)}}
+.meta-count b{{color:var(--ink);font-weight:700}}
+.sort-group{{display:flex;gap:6px;align-items:center}}
+.sort-lbl{{font-size:.72rem;color:var(--ink4)}}
+.sort-btn{{padding:4px 12px;border-radius:4px;border:1px solid var(--border);background:white;font-size:.72rem;font-family:var(--sans);color:var(--ink3);cursor:pointer;transition:all .12s}}
+.sort-btn.active{{background:var(--ink);color:white;border-color:var(--ink)}}
 
 /* ── 카드 그리드 ── */
-.grid-outer{{max-width:1400px;margin:0 auto;padding:0 48px 72px}}
-.book-grid{{display:grid;grid-template-columns:repeat(4,1fr);gap:26px}}
+.grid-wrap{{max-width:1320px;margin:0 auto;padding:20px 40px 80px}}
+.book-grid{{display:grid;grid-template-columns:repeat(4,1fr);gap:28px}}
 @media(max-width:1200px){{.book-grid{{grid-template-columns:repeat(3,1fr)}}}}
 @media(max-width:820px){{.book-grid{{grid-template-columns:repeat(2,1fr)}}}}
 @media(max-width:500px){{.book-grid{{grid-template-columns:1fr}}}}
 
-.book-card{{background:var(--white);border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);transition:all .22s;display:flex;flex-direction:column}}
-.book-card:hover{{box-shadow:0 10px 36px rgba(10,22,40,.11);transform:translateY(-4px);border-color:transparent}}
-.cover-wrap{{position:relative;background:#e9eef5;overflow:hidden}}
-.cover-wrap img{{width:100%;aspect-ratio:2/3;object-fit:cover;display:block;transition:transform .32s}}
-.book-card:hover .cover-wrap img{{transform:scale(1.04)}}
-.badge-new{{position:absolute;top:10px;left:10px;background:#ef4444;color:white;font-size:.6rem;font-weight:700;padding:3px 8px;border-radius:4px;letter-spacing:.5px;font-family:'Noto Sans KR',sans-serif}}
-.cat-badge{{position:absolute;bottom:10px;left:10px;font-size:.6rem;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:.3px;backdrop-filter:blur(6px);font-family:'Noto Sans KR',sans-serif}}
-.cat-tech{{background:rgba(124,58,237,.82);color:white}}
-.cat-esg{{background:rgba(5,150,105,.82);color:white}}
-.cat-social{{background:rgba(220,38,38,.82);color:white}}
-.cat-geo{{background:rgba(217,119,6,.82);color:white}}
-.src-pill{{position:absolute;top:10px;right:10px;font-size:.59rem;font-weight:600;padding:3px 8px;border-radius:4px;font-family:'Noto Sans KR',sans-serif}}
-.src-kyobo{{background:rgba(255,255,255,.92);color:#856404}}
-.src-nl{{background:rgba(255,255,255,.92);color:#155724}}
+/* 카드 */
+.book-card{{background:white;border-radius:var(--radius);border:1px solid var(--border);display:flex;flex-direction:column;opacity:0;transform:translateY(20px);transition:opacity .4s,transform .4s,box-shadow .22s,border-color .22s}}
+.book-card.visible{{opacity:1;transform:translateY(0)}}
+.book-card:hover{{box-shadow:0 12px 40px rgba(0,0,0,.1);border-color:rgba(0,0,0,.12)}}
+.cover-wrap{{position:relative;overflow:hidden;border-radius:var(--radius) var(--radius) 0 0;background:#f0f3f6}}
+.cover-wrap img{{width:100%;aspect-ratio:2/3;object-fit:cover;display:block;transition:transform .4s ease}}
+.book-card:hover .cover-wrap img{{transform:scale(1.05)}}
+.cover-overlay{{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.55) 0%,transparent 50%);opacity:0;transition:opacity .3s}}
+.book-card:hover .cover-overlay{{opacity:1}}
+.overlay-link{{position:absolute;bottom:14px;left:50%;transform:translateX(-50%) translateY(6px);opacity:0;transition:all .25s;white-space:nowrap;background:white;color:var(--ink);font-size:.72rem;font-weight:700;padding:7px 18px;border-radius:20px;text-decoration:none}}
+.book-card:hover .overlay-link{{opacity:1;transform:translateX(-50%) translateY(0)}}
+.badge-new{{position:absolute;top:10px;left:10px;background:#cf222e;color:white;font-size:.6rem;font-weight:700;padding:3px 8px;border-radius:4px;letter-spacing:.8px}}
+.cat-pill{{position:absolute;top:10px;right:10px;font-size:.6rem;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:.3px}}
+.cp-tech{{background:rgba(130,80,223,.9);color:white}}
+.cp-esg{{background:rgba(26,127,55,.9);color:white}}
+.cp-social{{background:rgba(207,34,46,.85);color:white}}
+.cp-geo{{background:rgba(188,76,0,.9);color:white}}
+.src-dot{{position:absolute;bottom:10px;right:10px;font-size:.58rem;font-weight:600;padding:2px 8px;border-radius:4px;background:rgba(255,255,255,.92);color:var(--ink3)}}
 
-.book-body{{padding:16px 17px 15px;flex:1;display:flex;flex-direction:column;gap:9px}}
-.book-title{{font-size:.88rem;font-weight:700;color:var(--navy);line-height:1.42;letter-spacing:-.3px}}
+.book-body{{padding:16px 18px 16px;flex:1;display:flex;flex-direction:column;gap:8px}}
+.book-title{{font-family:var(--serif);font-size:.92rem;font-weight:700;color:var(--ink);line-height:1.42;letter-spacing:-.2px}}
 .book-title a{{color:inherit;text-decoration:none}}
 .book-title a:hover{{color:var(--accent)}}
-.book-meta{{font-size:.72rem;color:var(--text3);font-weight:300;display:flex;gap:5px;flex-wrap:wrap;align-items:center;line-height:1.5}}
-.meta-sep{{opacity:.35}}
-.book-desc{{font-size:.77rem;color:var(--text2);line-height:1.75;flex:1;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;font-weight:300;letter-spacing:-.1px}}
+.book-meta{{font-size:.71rem;color:var(--ink4);display:flex;gap:4px;flex-wrap:wrap;align-items:center;font-weight:300}}
+.meta-sep{{opacity:.3}}
+.book-desc{{font-size:.77rem;color:var(--ink3);line-height:1.75;flex:1;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;font-weight:300}}
 .book-desc.expanded{{display:block}}
-.book-footer{{display:flex;align-items:center;justify-content:space-between;margin-top:2px;padding-top:10px;border-top:1px solid var(--border)}}
-.score-pill{{font-size:.7rem;font-weight:600;color:var(--accent);background:var(--accent2);padding:3px 10px;border-radius:20px;letter-spacing:-.1px}}
-.toggle-btn{{font-size:.72rem;color:var(--accent);cursor:pointer;font-weight:500;user-select:none;background:none;border:none;font-family:'Noto Sans KR',sans-serif;padding:0;letter-spacing:-.1px}}
+.book-footer{{display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid var(--border);margin-top:4px}}
+.score-badge{{font-size:.68rem;font-weight:700;color:var(--accent);background:var(--accent-light);padding:2px 9px;border-radius:20px}}
+.toggle-btn{{font-size:.71rem;color:var(--accent);cursor:pointer;font-weight:500;background:none;border:none;font-family:var(--sans);padding:0}}
 .toggle-btn:hover{{text-decoration:underline}}
 
-.empty{{text-align:center;padding:90px 20px;color:var(--text3);grid-column:1/-1}}
-.empty-ico{{font-size:2.8rem;margin-bottom:14px;opacity:.35}}
-.empty p{{font-size:.88rem;font-weight:300}}
+/* ── 빈 상태 ── */
+.empty{{grid-column:1/-1;text-align:center;padding:100px 20px}}
+.empty-icon{{font-size:3rem;opacity:.25;margin-bottom:16px}}
+.empty p{{font-size:.88rem;color:var(--ink4);font-weight:300}}
+
+/* ── 모달 ── */
+.modal-bg{{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:500;align-items:center;justify-content:center;backdrop-filter:blur(4px)}}
+.modal-bg.show{{display:flex}}
+.modal{{background:white;border-radius:16px;padding:32px 36px;max-width:460px;width:90%;box-shadow:0 24px 80px rgba(0,0,0,.18);animation:modalIn .2s ease}}
+@keyframes modalIn{{from{{opacity:0;transform:translateY(12px)}}to{{opacity:1;transform:translateY(0)}}}}
+.modal h2{{font-family:var(--serif);font-size:1.1rem;font-weight:700;color:var(--ink);margin-bottom:8px}}
+.modal p{{font-size:.82rem;color:var(--ink3);line-height:1.7;margin-bottom:20px;font-weight:300}}
+.token-label{{font-size:.74rem;font-weight:600;color:var(--ink2);display:block;margin-bottom:6px}}
+.token-input{{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:6px;font-size:.82rem;font-family:var(--sans);outline:none;margin-bottom:16px;transition:border .15s}}
+.token-input:focus{{border-color:var(--accent)}}
+.modal-status{{font-size:.79rem;padding:10px 14px;border-radius:8px;margin-bottom:16px;display:none;line-height:1.5}}
+.modal-status.ok{{background:#dafbe1;color:#1a7f37}}
+.modal-status.err{{background:#ffebe9;color:#cf222e}}
+.modal-btns{{display:flex;gap:10px;justify-content:flex-end}}
+.mbtn{{padding:8px 20px;border-radius:6px;font-family:var(--sans);font-size:.8rem;font-weight:600;cursor:pointer;border:1px solid var(--border);transition:all .15s}}
+.mbtn-primary{{background:var(--ink);color:white;border-color:var(--ink)}}
+.mbtn-primary:hover{{background:var(--ink2)}}
+.mbtn-secondary{{background:white;color:var(--ink2)}}
+.mbtn-secondary:hover{{background:var(--bg2)}}
+
+/* ── 스크롤 진행 바 ── */
+.progress-bar{{position:fixed;top:60px;left:0;height:2px;background:var(--accent);z-index:300;transition:width .1s linear;width:0%}}
 </style>
 </head>
 <body>
 
-<header class="site-header">
-  <div class="header-inner">
-    <div class="logo"><span class="logo-dot"></span>SV Book</div>
-    <span class="header-meta">{now} 기준 &nbsp;·&nbsp; {len(books)}권 큐레이션</span>
-    <div style="display:flex;gap:8px">
-      <button class="btn-refresh" onclick="openRefreshModal()">🔄 재수집</button>
-      <button class="btn-csv" onclick="downloadCSV()">CSV 다운로드</button>
+<!-- 네비게이션 -->
+<nav class="nav" id="mainNav">
+  <div class="nav-inner">
+    <div class="nav-logo">SV<span>.</span>Book</div>
+    <span class="nav-meta">{now} 기준 &nbsp;·&nbsp; {len(books)}권</span>
+    <div class="nav-actions">
+      <button class="nav-btn" onclick="openRefreshModal()">🔄 재수집</button>
+      <button class="nav-btn" onclick="downloadCSV()">CSV</button>
     </div>
   </div>
-</header>
+</nav>
 
-<!-- 안내 배너 -->
-<section class="intro-banner">
+<!-- 스크롤 진행 바 -->
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- 히어로 -->
+<section class="hero" id="heroSection">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">CSES SV Book</div>
+    <h1 class="hero-title">연구원을 위해<br>매주 선별한 도서</h1>
+    <p class="hero-desc">사회적가치, ESG, 기후·환경, 지정학 등<br>우리 연구와 연결된 신간을 매주 자동 수집·분류합니다.</p>
+    <div class="hero-cats">
+      <button class="hero-cat active" data-cat="" onclick="heroSetCat(this)">전체</button>
+      <button class="hero-cat" data-cat="Tech & Future" onclick="heroSetCat(this)">🤖 Tech &amp; Future</button>
+      <button class="hero-cat" data-cat="ESG & Sustainability" onclick="heroSetCat(this)">🌱 ESG &amp; Sustainability</button>
+      <button class="hero-cat" data-cat="Social & Human" onclick="heroSetCat(this)">🤝 Social &amp; Human</button>
+      <button class="hero-cat" data-cat="Geopolitics & Strategy" onclick="heroSetCat(this)">🌍 Geopolitics</button>
+    </div>
+  </div>
+  <div class="hero-visual" id="heroVisual"></div>
+</section>
+
+<!-- 소개 배너 -->
+<section class="intro">
   <div class="intro-inner">
-    <div class="intro-text">
-      <div class="intro-label">CSES SV Book</div>
-      <h2 class="intro-heading">연구원을 위해 매주 도서를 추천해드립니다</h2>
-      <p class="intro-desc">사회적가치, ESG, 기후·환경, 지정학 등 우리 연구와 연결된 신간을 매주 자동으로 수집·분류합니다.<br>아래 4가지 카테고리로 관심 분야를 바로 탐색해보세요.</p>
+    <div>
+      <div class="intro-label">About</div>
+      <h2 class="intro-heading">4가지 주제로<br>탐색하세요</h2>
+      <p class="intro-sub">교보문고와 국회도서관 신간에서 자동 수집한 책들을 관련도 순으로 정리했어요.</p>
     </div>
     <div class="intro-cats">
-      <div class="intro-cat ic-tech">
-        <span class="ic-icon">🤖</span>
-        <div>
-          <div class="ic-name">Tech &amp; Future</div>
-          <div class="ic-desc">AI, 로봇, 디지털 전환과 사회 변화</div>
-        </div>
+      <div class="icat icat-tech" onclick="filterCat('Tech & Future')">
+        <span class="icat-icon">🤖</span>
+        <div><div class="icat-name">Tech &amp; Future</div><div class="icat-desc">AI, 로봇, 디지털 전환과 사회 변화</div></div>
       </div>
-      <div class="intro-cat ic-esg">
-        <span class="ic-icon">🌱</span>
-        <div>
-          <div class="ic-name">ESG &amp; Sustainability</div>
-          <div class="ic-desc">기후위기, 탄소중립, 기업의 사회적 책임</div>
-        </div>
+      <div class="icat icat-esg" onclick="filterCat('ESG & Sustainability')">
+        <span class="icat-icon">🌱</span>
+        <div><div class="icat-name">ESG &amp; Sustainability</div><div class="icat-desc">기후위기, 탄소중립, 기업의 사회적 책임</div></div>
       </div>
-      <div class="intro-cat ic-social">
-        <span class="ic-icon">🤝</span>
-        <div>
-          <div class="ic-name">Social &amp; Human</div>
-          <div class="ic-desc">불평등, 인구변화, 일의 미래, 다양성</div>
-        </div>
+      <div class="icat icat-social" onclick="filterCat('Social & Human')">
+        <span class="icat-icon">🤝</span>
+        <div><div class="icat-name">Social &amp; Human</div><div class="icat-desc">불평등, 인구변화, 일의 미래, 다양성</div></div>
       </div>
-      <div class="intro-cat ic-geo">
-        <span class="ic-icon">🌍</span>
-        <div>
-          <div class="ic-name">Geopolitics &amp; Strategy</div>
-          <div class="ic-desc">글로벌 질서 재편, 공급망, 국제 전략</div>
-        </div>
+      <div class="icat icat-geo" onclick="filterCat('Geopolitics & Strategy')">
+        <span class="icat-icon">🌍</span>
+        <div><div class="icat-name">Geopolitics &amp; Strategy</div><div class="icat-desc">글로벌 질서 재편, 공급망, 국제 전략</div></div>
       </div>
     </div>
   </div>
 </section>
 
+<!-- 카테고리 탭 (sticky) -->
+<div class="toolbar-sticky">
+  <div class="toolbar-inner">
+    <button class="cat-tab active" data-cat="" onclick="setCat(this)">전체</button>
+    <button class="cat-tab" data-cat="Tech & Future" onclick="setCat(this)">🤖 Tech</button>
+    <button class="cat-tab" data-cat="ESG & Sustainability" onclick="setCat(this)">🌱 ESG</button>
+    <button class="cat-tab" data-cat="Social & Human" onclick="setCat(this)">🤝 Social</button>
+    <button class="cat-tab" data-cat="Geopolitics & Strategy" onclick="setCat(this)">🌍 Geo</button>
+    <div class="toolbar-sep"></div>
+    <select class="fsel" id="srcFilter" onchange="render()">
+      <option value="">전체 출처</option>
+      <option value="교보문고">교보문고</option>
+      <option value="국회도서관">국회도서관</option>
+    </select>
+    <select class="fsel" id="kwFilter" onchange="render()">
+      <option value="">전체 키워드</option>
+    </select>
+    <div class="search-wrap">
+      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input type="text" id="q" placeholder="검색..." oninput="render()">
+    </div>
+  </div>
+</div>
+
+<!-- 통계 + 정렬 -->
+<div class="meta-bar">
+  <span class="meta-count" id="stats"></span>
+  <div class="sort-group">
+    <span class="sort-lbl">정렬</span>
+    <button class="sort-btn active" id="btnDate" onclick="setSort('date')">최신순</button>
+    <button class="sort-btn" id="btnScore" onclick="setSort('score')">관련도순</button>
+  </div>
+</div>
+
+<!-- 카드 그리드 -->
+<div class="grid-wrap">
+  <div class="book-grid" id="bookGrid"></div>
+</div>
+
 <!-- 재수집 모달 -->
 <div class="modal-bg" id="refreshModal" onclick="if(event.target===this)closeModal()">
   <div class="modal">
     <h2>🔄 재수집 실행</h2>
-    <p>교보문고 · 국회도서관에서 최근 3개월 신간을 다시 수집하고 사이트를 업데이트합니다.<br>약 10~15분 후 페이지를 새로고침하면 반영돼요.</p>
-    <div style="margin-bottom:16px">
-      <label style="font-size:.76rem;font-weight:600;color:var(--text2);display:block;margin-bottom:6px">GitHub 토큰 (최초 1회만 입력, 자동 저장)</label>
-      <input id="tokenInput" type="password" placeholder="ghp_..." style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.82rem;font-family:'Noto Sans KR',sans-serif;outline:none">
-    </div>
+    <p>교보문고 · 국회도서관 최근 3개월 신간을 다시 수집하고 사이트를 업데이트합니다.<br>약 10~15분 후 페이지를 새로고침하면 반영돼요.</p>
+    <label class="token-label">GitHub 토큰 (최초 1회 입력, 자동 저장)</label>
+    <input class="token-input" id="tokenInput" type="password" placeholder="ghp_...">
     <div class="modal-status" id="modalStatus"></div>
     <div class="modal-btns">
       <button class="mbtn mbtn-secondary" onclick="closeModal()">닫기</button>
@@ -264,99 +340,73 @@ body{{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--tex
   </div>
 </div>
 
-<section class="hero">
-  <div class="hero-inner">
-    <div class="hero-label">Editor's Pick</div>
-    <div class="hero-title">이번 주 추천 도서 TOP 5</div>
-    <div class="rec-grid" id="recGrid"></div>
-  </div>
-</section>
-
-<nav class="cat-nav">
-  <div class="cat-nav-inner">
-    <button class="cat-tab active" data-cat="" onclick="setCat(this)">전체</button>
-    <button class="cat-tab" data-cat="Tech & Future" onclick="setCat(this)">🤖 Tech &amp; Future</button>
-    <button class="cat-tab" data-cat="ESG & Sustainability" onclick="setCat(this)">🌱 ESG &amp; Sustainability</button>
-    <button class="cat-tab" data-cat="Social & Human" onclick="setCat(this)">🤝 Social &amp; Human</button>
-    <button class="cat-tab" data-cat="Geopolitics & Strategy" onclick="setCat(this)">🌍 Geopolitics &amp; Strategy</button>
-  </div>
-</nav>
-
-<div class="controls">
-  <div class="search-wrap">
-    <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-    <input type="text" id="q" placeholder="도서명, 저자, 내용 검색..." oninput="render()">
-  </div>
-  <select class="fsel" id="srcFilter" onchange="render()">
-    <option value="">전체 출처</option>
-    <option value="교보문고">교보문고</option>
-    <option value="국회도서관">국회도서관</option>
-  </select>
-  <select class="fsel" id="kwFilter" onchange="render()">
-    <option value="">전체 키워드</option>
-  </select>
-</div>
-
-<div class="sort-row">
-  <span class="sort-lbl">정렬</span>
-  <button class="sort-btn active" id="btnDate" onclick="setSort('date')">최신순</button>
-  <button class="sort-btn" id="btnScore" onclick="setSort('score')">관련도순</button>
-</div>
-<div class="stats-row"><span id="stats"></span></div>
-
-<div class="grid-outer">
-  <div class="book-grid" id="bookGrid"></div>
-</div>
-
 <script>
 const ALL = {data_json};
 const TODAY = new Date().toISOString().slice(0,7);
-let sortKey = 'date', activeCat = '';
+let sortKey='date', activeCat='';
 
-const CC = {{
-  'Tech & Future':'cat-tech',
-  'ESG & Sustainability':'cat-esg',
-  'Social & Human':'cat-social',
-  'Geopolitics & Strategy':'cat-geo'
-}};
-const CAT_COLOR = {{
-  'Tech & Future':'#a78bfa',
-  'ESG & Sustainability':'#6ee7b7',
-  'Social & Human':'#fca5a5',
-  'Geopolitics & Strategy':'#fcd34d'
-}};
+const CP = {{'Tech & Future':'cp-tech','ESG & Sustainability':'cp-esg','Social & Human':'cp-social','Geopolitics & Strategy':'cp-geo'}};
+const CAT_COLOR = {{'Tech & Future':'#a78bfa','ESG & Sustainability':'#6ee7b7','Social & Human':'#fca5a5','Geopolitics & Strategy':'#fcd34d'}};
 
+// 키워드 드롭다운
 (function(){{
-  const order = {kw_list};
-  const present = new Set(ALL.map(b=>b['검색 키워드']));
-  const sel = document.getElementById('kwFilter');
+  const order={kw_list};
+  const present=new Set(ALL.map(b=>b['검색 키워드']));
+  const sel=document.getElementById('kwFilter');
   order.filter(k=>present.has(k)).forEach(k=>{{
     const o=document.createElement('option');o.value=k;o.textContent=k;sel.appendChild(o);
   }});
 }})();
 
+// 히어로 북 렌더
 (function(){{
-  const top5=[...ALL].sort((a,b)=>(b['_score']||0)-(a['_score']||0)).slice(0,5);
-  document.getElementById('recGrid').innerHTML=top5.map(b=>{{
+  const top3=[...ALL].sort((a,b)=>(b['_score']||0)-(a['_score']||0)).slice(0,3);
+  const vis=document.getElementById('heroVisual');
+  if(!top3.length) return;
+  vis.innerHTML=top3.map((b,i)=>{{
+    const sz=i===0?'hero-book-main':'hero-book-sub';
     const href=b['링크']||'#';
-    return `<a class="rec-card" href="${{esc(href)}}" target="_blank">
-      <img class="rec-card-img" src="${{esc(b['이미지']||'')}}" alt="${{esc(b['도서명'])}}" loading="lazy" onerror="this.style.background='#243550';this.removeAttribute('src')">
-      <div class="rec-card-body">
-        <div class="rec-card-cat" style="color:${{CAT_COLOR[b['_category']]||'#93c5fd'}}">${{esc(b['_category']||'')}}</div>
-        <div class="rec-card-title">${{esc(b['도서명'])}}</div>
-        <div class="rec-card-author">${{esc(b['저자']||'')}}</div>
-      </div>
-    </a>`;
+    return `<div class="hero-book ${{sz}}" style="transition-delay:${{i*80}}ms">
+      <a href="${{esc(href)}}" target="_blank"><img src="${{esc(b['이미지']||'')}}" alt="${{esc(b['도서명'])}}" onerror="this.parentNode.parentNode.style.display='none'"></a>
+    </div>`;
   }}).join('');
 }})();
 
 function esc(s){{return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}}
 
+// 네비 스크롤 효과
+window.addEventListener('scroll',()=>{{
+  document.getElementById('mainNav').classList.toggle('scrolled',window.scrollY>10);
+  const h=document.documentElement;
+  const pct=(window.scrollY/(h.scrollHeight-h.clientHeight))*100;
+  document.getElementById('progressBar').style.width=pct+'%';
+}},{{passive:true}});
+
+// 카테고리 필터
 function setCat(btn){{
   activeCat=btn.dataset.cat;
   document.querySelectorAll('.cat-tab').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   render();
+}}
+function heroSetCat(btn){{
+  activeCat=btn.dataset.cat;
+  document.querySelectorAll('.hero-cat').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.cat-tab').forEach(b=>{{
+    if(b.dataset.cat===activeCat) b.classList.add('active');
+    else b.classList.remove('active');
+  }});
+  render();
+  document.querySelector('.toolbar-sticky').scrollIntoView({{behavior:'smooth'}});
+}}
+function filterCat(cat){{
+  activeCat=cat;
+  document.querySelectorAll('.cat-tab,.hero-cat').forEach(b=>{{
+    b.classList.toggle('active', b.dataset.cat===cat);
+  }});
+  render();
+  document.querySelector('.toolbar-sticky').scrollIntoView({{behavior:'smooth'}});
 }}
 
 function setSort(key){{
@@ -369,10 +419,7 @@ function setSort(key){{
 function parseDate(s){{
   if(!s) return '';
   const m=s.match(/(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\\s+(\\d{{1,2}}),?\\s+(\\d{{4}})/i);
-  if(m){{
-    const mo={{'jan':'01','feb':'02','mar':'03','apr':'04','may':'05','jun':'06','jul':'07','aug':'08','sep':'09','oct':'10','nov':'11','dec':'12'}};
-    return m[3]+'-'+mo[m[1].slice(0,3).toLowerCase()]+'-'+m[2].padStart(2,'0');
-  }}
+  if(m){{const mo={{'jan':'01','feb':'02','mar':'03','apr':'04','may':'05','jun':'06','jul':'07','aug':'08','sep':'09','oct':'10','nov':'11','dec':'12'}};return m[3]+'-'+mo[m[1].slice(0,3).toLowerCase()]+'-'+m[2].padStart(2,'0');}}
   return s.replace(/\\./g,'-');
 }}
 
@@ -390,55 +437,60 @@ function filtered(){{
 }}
 
 function getSorted(){{
-  const list=filtered();
-  return list.sort((a,b)=>{{
+  return filtered().sort((a,b)=>{{
     if(sortKey==='score') return (b['_score']||0)-(a['_score']||0);
-    return (parseDate(b['출판일'])||'0000').localeCompare(parseDate(a['출판일'])||'0000');
+    return (parseDate(b['출판일'])||'0').localeCompare(parseDate(a['출판일'])||'0');
   }});
 }}
 
 function toggleDesc(uid,btn){{
-  const el=document.getElementById(uid);
-  const exp=el.classList.toggle('expanded');
-  btn.textContent=exp?'접기':'더 보기';
+  document.getElementById(uid).classList.toggle('expanded');
+  btn.textContent=document.getElementById(uid).classList.contains('expanded')?'접기':'더 보기';
 }}
+
+// IntersectionObserver for card animations
+const io=new IntersectionObserver(entries=>{{
+  entries.forEach(e=>{{if(e.isIntersecting){{e.target.classList.add('visible');io.unobserve(e.target);}}}}  );
+}},{{threshold:0.08}});
 
 function render(){{
   const books=getSorted();
   document.getElementById('stats').innerHTML=`<b>${{books.length}}</b>권 표시 중`;
   const grid=document.getElementById('bookGrid');
   if(!books.length){{
-    grid.innerHTML='<div class="empty"><div class="empty-ico">🔍</div><p>검색 결과가 없습니다</p></div>';
+    grid.innerHTML='<div class="empty"><div class="empty-icon">🔍</div><p>검색 결과가 없습니다</p></div>';
     return;
   }}
   grid.innerHTML=books.map((b,i)=>{{
     const ds=parseDate(b['출판일']);
     const isNew=ds&&ds.slice(0,7)>=TODAY;
     const href=b['링크']||'';
-    const titleEl=href?`<a href="${{esc(href)}}" target="_blank">${{esc(b['도서명'])}}</a>`:esc(b['도서명']);
     const cat=b['_category']||'';
+    const cp=CP[cat]||'';
     const uid='d'+i;
     const srcLbl=b['매체명']==='교보문고'?'교보':'국회';
-    const srcCls=b['매체명']==='교보문고'?'src-kyobo':'src-nl';
     const metaParts=[b['저자'],b['출판사'],b['출판일']].filter(Boolean).map(esc);
-    return `<div class="book-card">
+    return `<div class="book-card" style="transition-delay:${{(i%4)*60}}ms">
   <div class="cover-wrap">
-    <img src="${{esc(b['이미지']||'')}}" alt="${{esc(b['도서명'])}}" loading="lazy" onerror="this.parentNode.style.minHeight='160px';this.remove()">
+    <img src="${{esc(b['이미지']||'')}}" alt="${{esc(b['도서명'])}}" loading="lazy" onerror="this.parentNode.style.minHeight='180px';this.remove()">
+    <div class="cover-overlay"></div>
+    ${{href?`<a class="overlay-link" href="${{esc(href)}}" target="_blank">자세히 보기 →</a>`:''}}
     ${{isNew?'<span class="badge-new">NEW</span>':''}}
-    ${{cat?`<span class="cat-badge ${{CC[cat]||''}}">${{esc(cat)}}</span>`:''}}
-    <span class="src-pill ${{srcCls}}">${{srcLbl}}</span>
+    ${{cat?`<span class="cat-pill ${{cp}}">${{esc(cat)}}</span>`:''}}
+    <span class="src-dot">${{srcLbl}}</span>
   </div>
   <div class="book-body">
-    <div class="book-title">${{titleEl}}</div>
+    <div class="book-title">${{href?`<a href="${{esc(href)}}" target="_blank">${{esc(b['도서명'])}}</a>`:esc(b['도서명'])}}</div>
     <div class="book-meta">${{metaParts.join('<span class="meta-sep"> · </span>')}}</div>
     ${{b['책 내용']?`<div class="book-desc" id="${{uid}}">${{esc(b['책 내용'])}}</div>
     <button class="toggle-btn" onclick="toggleDesc('${{uid}}',this)">더 보기</button>`:''}}
     <div class="book-footer">
-      <span class="score-pill">관련도 ${{b['_score']||0}}점</span>
+      <span class="score-badge">관련도 ${{b['_score']||0}}점</span>
     </div>
   </div>
 </div>`;
   }}).join('');
+  grid.querySelectorAll('.book-card').forEach(c=>io.observe(c));
 }}
 
 function downloadCSV(){{
@@ -450,13 +502,11 @@ function downloadCSV(){{
   a.download='SV_Book_{filename_date}.csv';a.click();
 }}
 
-render();
-
-// ── 재수집 모달 ──
+// 모달
 function openRefreshModal(){{
   document.getElementById('refreshModal').classList.add('show');
-  const saved = localStorage.getItem('sv_gh_token');
-  if(saved) document.getElementById('tokenInput').value = saved;
+  const saved=localStorage.getItem('sv_gh_token');
+  if(saved) document.getElementById('tokenInput').value=saved;
 }}
 function closeModal(){{
   document.getElementById('refreshModal').classList.remove('show');
@@ -464,46 +514,37 @@ function closeModal(){{
   document.getElementById('runBtn').textContent='지금 실행';
   document.getElementById('runBtn').disabled=false;
 }}
-function setStatus(msg, type){{
+function setStatus(msg,type){{
   const el=document.getElementById('modalStatus');
-  el.textContent=msg; el.className='modal-status'+(type?' '+type:'');
+  el.textContent=msg;el.className='modal-status'+(type?' '+type:'');
   el.style.display=msg?'block':'none';
 }}
-
 async function triggerWorkflow(){{
-  const token = document.getElementById('tokenInput').value.trim();
-  if(!token){{ setStatus('❌ GitHub 토큰을 입력해주세요.','err'); return; }}
-  localStorage.setItem('sv_gh_token', token);
-
+  const token=document.getElementById('tokenInput').value.trim();
+  if(!token){{setStatus('❌ GitHub 토큰을 입력해주세요.','err');return;}}
+  localStorage.setItem('sv_gh_token',token);
   const btn=document.getElementById('runBtn');
-  btn.textContent='실행 중...'; btn.disabled=true;
-  setStatus('','');
+  btn.textContent='실행 중...';btn.disabled=true;setStatus('','');
   try{{
-    const res = await fetch(
-      'https://api.github.com/repos/csessocial/sv-book/actions/workflows/update.yml/dispatches',
-      {{
-        method:'POST',
-        headers:{{
-          'Authorization':'token '+token,
-          'Accept':'application/vnd.github+json',
-          'Content-Type':'application/json'
-        }},
-        body:JSON.stringify({{'ref':'main'}})
-      }}
-    );
+    const res=await fetch('https://api.github.com/repos/csessocial/sv-book/actions/workflows/update.yml/dispatches',{{
+      method:'POST',
+      headers:{{'Authorization':'token '+token,'Accept':'application/vnd.github+json','Content-Type':'application/json'}},
+      body:JSON.stringify({{'ref':'main'}})
+    }});
     if(res.status===204){{
-      setStatus('✅ 수집 시작됐어요! 약 10~15분 후 페이지를 새로고침하세요.','ok');
+      setStatus('✅ 수집 시작됐어요! 약 10~15분 후 새로고침하세요.','ok');
       btn.textContent='실행됨';
     }} else {{
       const j=await res.json().catch(()=>({{}}));
       setStatus('❌ '+(j.message||'오류 '+res.status),'err');
-      btn.textContent='지금 실행'; btn.disabled=false;
+      btn.textContent='지금 실행';btn.disabled=false;
     }}
   }} catch(e){{
-    setStatus('❌ 네트워크 오류: '+e.message,'err');
-    btn.textContent='지금 실행'; btn.disabled=false;
+    setStatus('❌ '+e.message,'err');btn.textContent='지금 실행';btn.disabled=false;
   }}
 }}
+
+render();
 </script>
 </body>
 </html>"""
