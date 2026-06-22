@@ -288,7 +288,7 @@ body{{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font
       <button class="hero-cat" data-cat="Tech & Future" onclick="heroSetCat(this)">🤖 Tech &amp; Future</button>
       <button class="hero-cat" data-cat="ESG & Sustainability" onclick="heroSetCat(this)">🌱 ESG &amp; Sustainability</button>
       <button class="hero-cat" data-cat="Social & Human" onclick="heroSetCat(this)">🤝 Social &amp; Human</button>
-      <button class="hero-cat" data-cat="Geopolitics & Strategy" onclick="heroSetCat(this)">🌍 Geopolitics</button>
+      <button class="hero-cat" data-cat="Geopolitics & Strategy" onclick="heroSetCat(this)">🌍 Global</button>
     </div>
   </div>
   <div class="hero-visual">
@@ -326,7 +326,7 @@ body{{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font
       </div>
       <div class="icat icat-geo" onclick="filterCat('Geopolitics & Strategy')">
         <span class="icat-icon">🌍</span>
-        <div><div class="icat-name">Geopolitics &amp; Strategy</div><div class="icat-desc">글로벌 질서 재편, 공급망, 국제 전략</div></div>
+        <div><div class="icat-name">Global &amp; Strategy</div><div class="icat-desc">글로벌 질서 재편, 공급망, 국제 전략</div></div>
       </div>
     </div>
   </div>
@@ -339,7 +339,7 @@ body{{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font
     <button class="cat-tab" data-cat="Tech & Future" onclick="setCat(this)">🤖 Tech</button>
     <button class="cat-tab" data-cat="ESG & Sustainability" onclick="setCat(this)">🌱 ESG</button>
     <button class="cat-tab" data-cat="Social & Human" onclick="setCat(this)">🤝 Social</button>
-    <button class="cat-tab" data-cat="Geopolitics & Strategy" onclick="setCat(this)">🌍 Geo</button>
+    <button class="cat-tab" data-cat="Geopolitics & Strategy" onclick="setCat(this)">🌍 Global</button>
     <div class="toolbar-sep"></div>
     <select class="fsel" id="srcFilter" onchange="render()">
       <option value="">전체 출처</option>
