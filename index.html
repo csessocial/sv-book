@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SV Book — 2026.06.22 13:09</title>
+<title>SV Book — 2026.06.22 13:37</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -61,13 +61,31 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-
 .hero-cat[data-cat="ESG & Sustainability"].active{background:rgba(26,127,55,.4);border-color:#6ee7b7}
 .hero-cat[data-cat="Social & Human"].active{background:rgba(207,34,46,.35);border-color:#fca5a5}
 .hero-cat[data-cat="Geopolitics & Strategy"].active{background:rgba(188,76,0,.4);border-color:#fcd34d}
-.hero-visual{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;padding:48px 56px 48px 0;gap:20px}
+.hero-visual{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;padding:40px 56px 40px 0}
 @media(max-width:860px){.hero-visual{display:none}}
-.hero-book{flex-shrink:0;transition:transform .3s}
-.hero-book:hover{transform:translateY(-6px) rotate(-1deg)}
-.hero-book img{border-radius:8px;box-shadow:0 24px 60px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.08);display:block;object-fit:cover}
-.hero-book-main img{width:160px;height:240px}
-.hero-book-sub img{width:110px;height:165px;opacity:.75}
+/* ── 캐러셀 ── */
+.carousel{position:relative;width:360px;height:300px}
+.carousel-track{position:relative;width:100%;height:100%}
+.c-slide{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:18px;opacity:0;transition:opacity .4s,transform .4s;pointer-events:none;transform:translateX(30px)}
+.c-slide.active{opacity:1;transform:translateX(0);pointer-events:auto}
+.c-slide.exit{opacity:0;transform:translateX(-30px)}
+.c-book-main{flex-shrink:0}
+.c-book-main img{width:148px;height:220px;border-radius:8px;box-shadow:0 20px 50px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.08);display:block;object-fit:cover;transition:transform .3s}
+.c-book-main:hover img{transform:translateY(-5px) rotate(-1deg)}
+.c-info{flex:1;min-width:0}
+.c-rank{font-size:.6rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#4fc3f7;margin-bottom:8px}
+.c-title{font-size:.88rem;font-weight:700;color:white;line-height:1.4;margin-bottom:6px}
+.c-author{font-size:.72rem;color:rgba(255,255,255,.5);margin-bottom:10px;font-weight:300}
+.c-desc{font-size:.72rem;color:rgba(255,255,255,.55);line-height:1.65;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;font-weight:300}
+.c-link{display:inline-block;margin-top:12px;font-size:.7rem;font-weight:700;color:#4fc3f7;text-decoration:none;border:1px solid rgba(79,195,247,.4);padding:4px 12px;border-radius:20px;transition:all .2s}
+.c-link:hover{background:rgba(79,195,247,.15)}
+/* 화살표 + 인디케이터 */
+.carousel-nav{position:absolute;bottom:-36px;left:0;right:0;display:flex;align-items:center;justify-content:center;gap:16px}
+.c-arrow{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:white;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center;transition:all .18s;flex-shrink:0}
+.c-arrow:hover{background:rgba(255,255,255,.2)}
+.c-dots{display:flex;gap:6px;align-items:center}
+.c-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.3);cursor:pointer;transition:all .2s}
+.c-dot.active{background:white;width:18px;border-radius:3px}
 
 /* ── 소개 배너 ── */
 .intro{background:var(--bg);border-bottom:1px solid var(--border);padding:0}
@@ -185,7 +203,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-
 <nav class="nav" id="mainNav">
   <div class="nav-inner">
     <div class="nav-logo">SV<span>.</span>Book</div>
-    <span class="nav-meta">2026.06.22 13:09 기준 &nbsp;·&nbsp; 161권</span>
+    <span class="nav-meta">2026.06.22 13:37 기준 &nbsp;·&nbsp; 161권</span>
     <div class="nav-actions">
       <button class="nav-btn" onclick="openRefreshModal()">🔄 재수집</button>
       <button class="nav-btn" onclick="downloadCSV()">CSV</button>
@@ -211,7 +229,16 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-
       <button class="hero-cat" data-cat="Geopolitics & Strategy" onclick="heroSetCat(this)">🌍 Geopolitics</button>
     </div>
   </div>
-  <div class="hero-visual" id="heroVisual"></div>
+  <div class="hero-visual">
+    <div class="carousel" id="heroCarousel">
+      <div class="carousel-track" id="carouselTrack"></div>
+      <div class="carousel-nav">
+        <button class="c-arrow" onclick="carouselPrev()">&#8592;</button>
+        <div class="c-dots" id="cDots"></div>
+        <button class="c-arrow" onclick="carouselNext()">&#8594;</button>
+      </div>
+    </div>
+  </div>
 </section>
 
 <!-- 소개 배너 -->
@@ -315,19 +342,68 @@ const CAT_COLOR = {'Tech & Future':'#a78bfa','ESG & Sustainability':'#6ee7b7','S
   });
 })();
 
-// 히어로 북 렌더
-(function(){
-  const top3=[...ALL].sort((a,b)=>(b['_score']||0)-(a['_score']||0)).slice(0,3);
-  const vis=document.getElementById('heroVisual');
-  if(!top3.length) return;
-  vis.innerHTML=top3.map((b,i)=>{
-    const sz=i===0?'hero-book-main':'hero-book-sub';
-    const href=b['링크']||'#';
-    return `<div class="hero-book ${sz}" style="transition-delay:${i*80}ms">
-      <a href="${esc(href)}" target="_blank"><img src="${esc(b['이미지']||'')}" alt="${esc(b['도서명'])}" onerror="this.parentNode.parentNode.style.display='none'"></a>
-    </div>`;
-  }).join('');
+// ── 이달의 추천 도서 캐러셀 (26년 6월 SV Book 편집 선정) ──
+const FEATURED = [
+  {
+    rank:'이달의 추천 1위',
+    title:'이토록 인간적인 능력',
+    author:'그레이엄 리 · 길벗 · 2026.02',
+    desc:'"쓰지 않는 능력은 잃는다" — AI 시대, 우리를 인간답게 만드는 12가지 핵심 능력을 조명하며 인간다움의 본질을 되묻는다.',
+    image:'https://shopping-phinf.pstatic.net/main_5886504/58865048657.20260331112437.jpg',
+    link:'https://search.shopping.naver.com/book/catalog/58865048657',
+  },
+  {
+    rank:'이달의 추천 2위',
+    title:'로봇, 그리고 로봇을 사랑하는 사람들',
+    author:'이브 헤롤 · 현암사 · 2026.06',
+    desc:'로봇 밀도 1위 국가에서 인간은 로봇과 어떤 관계를 맺는가? 돌봄·반려·교육 로봇이 일상에 깊숙이 들어오는 시대를 탐구한다.',
+    image:'https://shopping-phinf.pstatic.net/main_5914464/59144649784.20260331103324.jpg',
+    link:'https://search.shopping.naver.com/book/catalog/59144649784',
+  },
+  {
+    rank:'이달의 추천 3위',
+    title:'아이들이 쉬는 숨',
+    author:'데브라 헨드릭 · 흐름출판 · 2026.03',
+    desc:'『침묵의 봄』을 잇는 기후과학의 고전. 기후변화가 아이들의 호흡기와 삶에 미치는 영향을 소아과 의사의 시선으로 고발한다.',
+    image:'https://shopping-phinf.pstatic.net/main_5937434/59374347066.20260331110301.jpg',
+    link:'https://search.shopping.naver.com/book/catalog/59374347066',
+  },
+];
+
+let curSlide=0;
+(function initCarousel(){
+  const track=document.getElementById('carouselTrack');
+  const dots=document.getElementById('cDots');
+  if(!track) return;
+  track.innerHTML=FEATURED.map((b,i)=>`
+    <div class="c-slide${i===0?' active':''}" data-idx="${i}">
+      <div class="c-book-main">
+        <a href="${b.link}" target="_blank"><img src="${b.image}" alt="${b.title}"></a>
+      </div>
+      <div class="c-info">
+        <div class="c-rank">${b.rank}</div>
+        <div class="c-title">${b.title}</div>
+        <div class="c-author">${b.author}</div>
+        <div class="c-desc">${b.desc}</div>
+        <a class="c-link" href="${b.link}" target="_blank">자세히 보기 →</a>
+      </div>
+    </div>`).join('');
+  dots.innerHTML=FEATURED.map((_,i)=>`<div class="c-dot${i===0?' active':''}" onclick="goSlide(${i})"></div>`).join('');
 })();
+
+function goSlide(n){
+  const slides=document.querySelectorAll('.c-slide');
+  const dots=document.querySelectorAll('.c-dot');
+  slides[curSlide].classList.remove('active');
+  slides[curSlide].classList.add('exit');
+  setTimeout(()=>slides[curSlide]&&slides[curSlide].classList.remove('exit'),400);
+  dots[curSlide].classList.remove('active');
+  curSlide=(n+FEATURED.length)%FEATURED.length;
+  slides[curSlide].classList.add('active');
+  dots[curSlide].classList.add('active');
+}
+function carouselNext(){goSlide(curSlide+1);}
+function carouselPrev(){goSlide(curSlide-1);}
 
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
