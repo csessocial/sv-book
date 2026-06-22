@@ -94,6 +94,23 @@ body{{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--tex
 .mbtn-secondary{{background:#f3f4f6;color:var(--text2)}}
 .mbtn-secondary:hover{{background:#e5e7eb}}
 
+/* ── 안내 배너 ── */
+.intro-banner{{background:white;border-bottom:1px solid var(--border)}}
+.intro-inner{{max-width:1400px;margin:0 auto;padding:40px 48px;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}}
+@media(max-width:900px){{.intro-inner{{grid-template-columns:1fr;gap:28px}}}}
+.intro-label{{font-size:.68rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--accent);margin-bottom:12px}}
+.intro-heading{{font-size:1.55rem;font-weight:700;color:var(--navy);line-height:1.35;letter-spacing:-.5px;margin-bottom:14px}}
+.intro-desc{{font-size:.84rem;color:var(--text2);line-height:1.8;font-weight:300}}
+.intro-cats{{display:grid;grid-template-columns:1fr 1fr;gap:14px}}
+.intro-cat{{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;border-radius:10px;border:1.5px solid var(--border)}}
+.ic-tech{{border-color:#ede9fe;background:#faf8ff}}
+.ic-esg{{border-color:#d1fae5;background:#f0fdf9}}
+.ic-social{{border-color:#fee2e2;background:#fff8f8}}
+.ic-geo{{border-color:#fef3c7;background:#fffdf0}}
+.ic-icon{{font-size:1.3rem;flex-shrink:0;margin-top:1px}}
+.ic-name{{font-size:.78rem;font-weight:700;color:var(--navy);margin-bottom:3px;letter-spacing:-.2px}}
+.ic-desc{{font-size:.71rem;color:var(--text3);line-height:1.5;font-weight:300}}
+
 /* ── 히어로 TOP5 ── */
 .hero{{background:var(--navy2);padding:44px 48px 36px}}
 .hero-inner{{max-width:1400px;margin:0 auto}}
@@ -188,6 +205,47 @@ body{{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--tex
     </div>
   </div>
 </header>
+
+<!-- 안내 배너 -->
+<section class="intro-banner">
+  <div class="intro-inner">
+    <div class="intro-text">
+      <div class="intro-label">CSES SV Book</div>
+      <h2 class="intro-heading">연구원을 위해 매주 도서를 추천해드립니다</h2>
+      <p class="intro-desc">사회적가치, ESG, 기후·환경, 지정학 등 우리 연구와 연결된 신간을 매주 자동으로 수집·분류합니다.<br>아래 4가지 카테고리로 관심 분야를 바로 탐색해보세요.</p>
+    </div>
+    <div class="intro-cats">
+      <div class="intro-cat ic-tech">
+        <span class="ic-icon">🤖</span>
+        <div>
+          <div class="ic-name">Tech &amp; Future</div>
+          <div class="ic-desc">AI, 로봇, 디지털 전환과 사회 변화</div>
+        </div>
+      </div>
+      <div class="intro-cat ic-esg">
+        <span class="ic-icon">🌱</span>
+        <div>
+          <div class="ic-name">ESG &amp; Sustainability</div>
+          <div class="ic-desc">기후위기, 탄소중립, 기업의 사회적 책임</div>
+        </div>
+      </div>
+      <div class="intro-cat ic-social">
+        <span class="ic-icon">🤝</span>
+        <div>
+          <div class="ic-name">Social &amp; Human</div>
+          <div class="ic-desc">불평등, 인구변화, 일의 미래, 다양성</div>
+        </div>
+      </div>
+      <div class="intro-cat ic-geo">
+        <span class="ic-icon">🌍</span>
+        <div>
+          <div class="ic-name">Geopolitics &amp; Strategy</div>
+          <div class="ic-desc">글로벌 질서 재편, 공급망, 국제 전략</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
 <!-- 재수집 모달 -->
 <div class="modal-bg" id="refreshModal" onclick="if(event.target===this)closeModal()">
