@@ -173,11 +173,17 @@ body{{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font
 .sort-btn.active{{background:var(--ink);color:white;border-color:var(--ink)}}
 
 /* ── 카드 그리드 ── */
-.grid-wrap{{max-width:1320px;margin:0 auto;padding:20px 40px 80px}}
-.book-grid{{display:grid;grid-template-columns:repeat(4,1fr);gap:28px}}
-@media(max-width:1200px){{.book-grid{{grid-template-columns:repeat(3,1fr)}}}}
-@media(max-width:820px){{.book-grid{{grid-template-columns:repeat(2,1fr)}}}}
+.grid-wrap{{max-width:1320px;margin:0 auto;padding:20px 40px 40px}}
+.book-grid{{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}}
+@media(max-width:900px){{.book-grid{{grid-template-columns:repeat(2,1fr)}}}}
 @media(max-width:500px){{.book-grid{{grid-template-columns:1fr}}}}
+/* ── 페이지네이션 ── */
+.pagination{{display:flex;align-items:center;justify-content:center;gap:6px;padding:32px 0 64px}}
+.pg-btn{{min-width:36px;height:36px;padding:0 10px;border-radius:6px;border:1px solid var(--border);background:white;color:var(--ink3);font-size:.82rem;font-family:var(--sans);cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center}}
+.pg-btn:hover{{border-color:var(--ink3);color:var(--ink)}}
+.pg-btn.active{{background:var(--ink);color:white;border-color:var(--ink);font-weight:700}}
+.pg-btn:disabled{{opacity:.35;cursor:default}}
+.pg-ellipsis{{color:var(--ink4);font-size:.82rem;padding:0 4px}}
 
 /* 카드 */
 .book-card{{background:white;border-radius:var(--radius);border:1px solid var(--border);display:flex;flex-direction:column;opacity:0;transform:translateY(20px);transition:opacity .4s,transform .4s,box-shadow .22s,border-color .22s}}
@@ -350,6 +356,7 @@ body{{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font
 <!-- 카드 그리드 -->
 <div class="grid-wrap">
   <div class="book-grid" id="bookGrid"></div>
+  <div class="pagination" id="pagination"></div>
 </div>
 
 <!-- 재수집 모달 -->
@@ -529,24 +536,24 @@ const io=new IntersectionObserver(entries=>{{
   entries.forEach(e=>{{if(e.isIntersecting){{e.target.classList.add('visible');io.unobserve(e.target);}}}}  );
 }},{{threshold:0.08}});
 
-function render(){{
-  const books=getSorted();
-  document.getElementById('stats').innerHTML=`<b>${{books.length}}</b>권 표시 중`;
+const PAGE_SIZE=9;
+let curPage=1;
+
+function renderPage(books, page){{
+  const total=Math.ceil(books.length/PAGE_SIZE)||1;
+  curPage=Math.max(1,Math.min(page,total));
+  const slice=books.slice((curPage-1)*PAGE_SIZE, curPage*PAGE_SIZE);
   const grid=document.getElementById('bookGrid');
-  if(!books.length){{
-    grid.innerHTML='<div class="empty"><div class="empty-icon">🔍</div><p>검색 결과가 없습니다</p></div>';
-    return;
-  }}
-  grid.innerHTML=books.map((b,i)=>{{
+  grid.innerHTML=slice.map((b,i)=>{{
     const ds=parseDate(b['출판일']);
     const isNew=ds&&ds.slice(0,7)>=TODAY;
     const href=b['링크']||'';
     const cat=b['_category']||'';
     const cp=CP[cat]||'';
-    const uid='d'+i;
+    const uid='p'+curPage+'i'+i;
     const srcLbl=b['매체명']==='교보문고'?'교보':'국회';
     const metaParts=[b['저자'],b['출판사'],b['출판일']].filter(Boolean).map(esc);
-    return `<div class="book-card" style="transition-delay:${{(i%4)*60}}ms">
+    return `<div class="book-card" style="transition-delay:${{(i%3)*60}}ms">
   <div class="cover-wrap">
     <img src="${{esc(b['이미지']||'')}}" alt="${{esc(b['도서명'])}}" loading="lazy" onerror="this.parentNode.style.minHeight='180px';this.remove()">
     <div class="cover-overlay"></div>
@@ -567,6 +574,43 @@ function render(){{
 </div>`;
   }}).join('');
   grid.querySelectorAll('.book-card').forEach(c=>io.observe(c));
+
+  // 페이지네이션 렌더
+  const pg=document.getElementById('pagination');
+  if(total<=1){{pg.innerHTML='';return;}}
+  const pages=[];
+  // 항상 1 표시
+  pages.push(1);
+  if(curPage>3) pages.push('…');
+  for(let p=Math.max(2,curPage-1);p<=Math.min(total-1,curPage+1);p++) pages.push(p);
+  if(curPage<total-2) pages.push('…');
+  if(total>1) pages.push(total);
+
+  pg.innerHTML=
+    `<button class="pg-btn" onclick="goPage(${{curPage-1}})" ${{curPage===1?'disabled':''}}>&#8592;</button>`+
+    pages.map(p=>p==='…'
+      ? `<span class="pg-ellipsis">…</span>`
+      : `<button class="pg-btn${{p===curPage?' active':''}}" onclick="goPage(${{p}})">${{p}}</button>`
+    ).join('')+
+    `<button class="pg-btn" onclick="goPage(${{curPage+1}})" ${{curPage===total?'disabled':''}}>&#8594;</button>`;
+}}
+
+function goPage(p){{
+  const books=getSorted();
+  renderPage(books,p);
+  document.querySelector('.toolbar-sticky').scrollIntoView({{behavior:'smooth'}});
+}}
+
+function render(){{
+  const books=getSorted();
+  document.getElementById('stats').innerHTML=`<b>${{books.length}}</b>권 표시 중`;
+  const grid=document.getElementById('bookGrid');
+  if(!books.length){{
+    grid.innerHTML='<div class="empty"><div class="empty-icon">🔍</div><p>검색 결과가 없습니다</p></div>';
+    document.getElementById('pagination').innerHTML='';
+    return;
+  }}
+  renderPage(books,1);
 }}
 
 function downloadCSV(){{
