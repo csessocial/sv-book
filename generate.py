@@ -96,8 +96,9 @@ body{{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font
 .nav-btn.primary:hover{{opacity:.88}}
 
 /* ── 히어로 ── */
-.hero{{margin-top:60px;background:linear-gradient(135deg,#1a1f36 0%,#0f1d5e 40%,#1a1051 70%,#0d1117 100%);min-height:600px;display:grid;grid-template-columns:1fr 1fr;position:relative;overflow:hidden}}
-@media(max-width:860px){{.hero{{grid-template-columns:1fr;min-height:auto}}}}
+.hero{{margin-top:60px;background:linear-gradient(135deg,#1a1f36 0%,#0f1d5e 40%,#1a1051 70%,#0d1117 100%);min-height:600px;position:relative;overflow:hidden}}
+.hero-grid{{max-width:1320px;margin:0 auto;padding:0 40px;display:grid;grid-template-columns:1fr 1fr;min-height:600px}}
+@media(max-width:860px){{.hero-grid{{grid-template-columns:1fr;min-height:auto}}}}
 .hero-bg{{position:absolute;inset:0;pointer-events:none;overflow:hidden}}
 .hero-bg::before{{content:'';position:absolute;top:-40%;right:-10%;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(99,102,241,.35) 0%,transparent 65%);animation:pulse 6s ease-in-out infinite}}
 .hero-bg::after{{content:'';position:absolute;bottom:-30%;left:-5%;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(139,92,246,.25) 0%,transparent 65%);animation:pulse 8s ease-in-out infinite .5s}}
@@ -107,8 +108,8 @@ body{{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font
 .hero-orb-2{{width:200px;height:200px;bottom:10%;left:30%;background:rgba(124,58,237,.18);animation:float2 9s ease-in-out infinite}}
 @keyframes float1{{0%,100%{{transform:translateY(0) translateX(0)}}50%{{transform:translateY(-20px) translateX(10px)}}}}
 @keyframes float2{{0%,100%{{transform:translateY(0)}}50%{{transform:translateY(15px)}}}}
-.hero-content{{position:relative;z-index:1;padding:72px 48px 80px 80px;display:flex;flex-direction:column;justify-content:center;animation:fadeUp .6s ease both}}
-@media(max-width:860px){{.hero-content{{padding:48px 32px}}}}
+.hero-content{{position:relative;z-index:1;padding:72px 0 80px 0;display:flex;flex-direction:column;justify-content:center;animation:fadeUp .6s ease both}}
+@media(max-width:860px){{.hero-content{{padding:48px 0}}}}
 .hero-eyebrow{{font-size:.67rem;font-weight:700;letter-spacing:3.5px;text-transform:uppercase;background:linear-gradient(90deg,#7dd3fc,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:18px;display:flex;align-items:center;gap:10px}}
 .hero-eyebrow::before{{content:'';width:28px;height:2px;background:linear-gradient(90deg,#7dd3fc,#a78bfa);border-radius:2px;flex-shrink:0}}
 .hero-title{{font-size:2.7rem;font-weight:800;color:white;line-height:1.2;letter-spacing:-.6px;margin-bottom:18px;text-shadow:0 2px 20px rgba(0,0,0,.3)}}
@@ -121,7 +122,7 @@ body{{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font
 .hero-cat[data-cat="ESG & Sustainability"].active{{background:rgba(16,185,129,.3);border-color:#6ee7b7}}
 .hero-cat[data-cat="Social & Human"].active{{background:rgba(239,68,68,.3);border-color:#fca5a5}}
 .hero-cat[data-cat="Geopolitics & Strategy"].active{{background:rgba(245,158,11,.3);border-color:#fcd34d}}
-.hero-visual{{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;padding:40px 56px 60px 0;animation:fadeUp .7s .15s ease both}}
+.hero-visual{{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;padding:40px 0 60px 0;animation:fadeUp .7s .15s ease both}}
 @media(max-width:860px){{.hero-visual{{display:none}}}}
 /* ── 캐러셀 ── */
 .carousel{{position:relative;width:480px;height:420px}}
@@ -353,6 +354,7 @@ body{{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font
     <div class="hero-orb hero-orb-1"></div>
     <div class="hero-orb hero-orb-2"></div>
   </div>
+  <div class="hero-grid">
   <div class="hero-content">
     <div class="hero-eyebrow">CSES SV Book</div>
     <h1 class="hero-title">매주 사회적가치를<br>담은 책을 선별합니다</h1>
@@ -374,6 +376,7 @@ body{{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font
         <button class="c-arrow" onclick="carouselNext()">&#8594;</button>
       </div>
     </div>
+  </div>
   </div>
 </section>
 
