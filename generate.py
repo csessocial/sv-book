@@ -14,14 +14,16 @@ def collect(sources: list[str]) -> list[dict]:
     all_books = []
     seen = set()
 
-    SRC_LABELS = {"kyobo": "교보문고", "amazon": "Amazon", "nanet": "국회도서관"}
-    steps = [s for s in ["kyobo", "amazon", "nanet"] if s in sources]
+    SRC_LABELS = {"kyobo": "교보문고", "amazon": "Amazon", "nanet": "국회도서관", "naver": "네이버 도서"}
+    steps = [s for s in ["kyobo", "amazon", "nanet", "naver"] if s in sources]
     for i, src in enumerate(steps, 1):
         print(f"[{i}/{len(steps)}] {SRC_LABELS[src]} 수집 중...")
         if src == "kyobo":
             from kyobo_scraper import fetch_all_books
         elif src == "amazon":
             from amazon_scraper import fetch_all_books
+        elif src == "naver":
+            from naver_scraper import fetch_all_books
         else:
             from nanet_scraper import fetch_all_books
         for b in fetch_all_books():
@@ -116,7 +118,7 @@ body{{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font
 .hero-visual{{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;padding:40px 56px 60px 0;animation:fadeUp .7s .15s ease both}}
 @media(max-width:860px){{.hero-visual{{display:none}}}}
 /* ── 캐러셀 ── */
-.carousel{{position:relative;width:420px;height:340px}}
+.carousel{{position:relative;width:420px;height:380px}}
 .carousel-track{{position:relative;width:100%;height:100%}}
 .c-slide{{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:22px;opacity:0;transition:opacity .45s,transform .45s;pointer-events:none;transform:translateX(30px)}}
 .c-slide.active{{opacity:1;transform:translateX(0);pointer-events:auto}}
@@ -128,7 +130,8 @@ body{{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font
 .c-rank{{font-size:.6rem;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;background:linear-gradient(90deg,#7dd3fc,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}}
 .c-title{{font-size:.95rem;font-weight:800;color:white;line-height:1.38;margin-bottom:6px}}
 .c-author{{font-size:.72rem;color:rgba(255,255,255,.48);margin-bottom:12px;font-weight:300}}
-.c-desc{{font-size:.73rem;color:rgba(255,255,255,.58);line-height:1.7;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;font-weight:300}}
+.c-desc{{font-size:.73rem;color:rgba(255,255,255,.58);line-height:1.7;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;font-weight:300}}
+.c-bio{{font-size:.65rem;color:rgba(255,255,255,.4);line-height:1.6;margin-top:6px;font-weight:300;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}}
 .c-link{{display:inline-flex;align-items:center;gap:4px;margin-top:14px;font-size:.71rem;font-weight:700;color:white;text-decoration:none;background:linear-gradient(135deg,rgba(67,97,238,.5),rgba(124,58,237,.5));border:1px solid rgba(255,255,255,.2);padding:5px 14px;border-radius:20px;transition:all .22s;backdrop-filter:blur(4px)}}
 .c-link:hover{{background:linear-gradient(135deg,rgba(67,97,238,.75),rgba(124,58,237,.75));border-color:rgba(255,255,255,.4)}}
 /* 화살표 + 인디케이터 */
@@ -408,6 +411,7 @@ body{{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font
       <option value="">전체 출처</option>
       <option value="교보문고">교보문고</option>
       <option value="국회도서관">국회도서관</option>
+      <option value="네이버 도서">네이버 도서</option>
     </select>
     <select class="fsel" id="kwFilter" onchange="render()">
       <option value="">전체 키워드</option>
@@ -474,6 +478,7 @@ const FEATURED = [
     rank:'이달의 추천 1위',
     title:'이토록 인간적인 능력',
     author:'그레이엄 리 · 길벗 · 2026.02',
+    bio:'디지털 기술 교육 전문가. 글로벌 디지털 교육 기업 리디언스톤(Lydian Stone) 창립자 겸 CEO. 인공지능 시대에 지켜야 할 인간다움과 핵심 능력을 연구.',
     desc:'"쓰지 않는 능력은 잃는다" — AI 시대, 우리를 인간답게 만드는 12가지 핵심 능력을 조명하며 인간다움의 본질을 되묻는다.',
     image:'https://shopping-phinf.pstatic.net/main_5886504/58865048657.20260331112437.jpg',
     link:'https://search.shopping.naver.com/book/catalog/58865048657',
@@ -482,6 +487,7 @@ const FEATURED = [
     rank:'이달의 추천 2위',
     title:'로봇, 그리고 로봇을 사랑하는 사람들',
     author:'이브 헤롤 · 현암사 · 2026.06',
+    bio:'과학·의학 저널리스트이자 작가. 미국 유전정책연구소 공공정보 이사 역임. 소셜 로봇이 인류의 인간성과 심리에 미치는 영향을 탐구.',
     desc:'로봇 밀도 1위 국가에서 인간은 로봇과 어떤 관계를 맺는가? 돌봄·반려·교육 로봇이 일상에 깊숙이 들어오는 시대를 탐구한다.',
     image:'https://shopping-phinf.pstatic.net/main_5914464/59144649784.20260331103324.jpg',
     link:'https://search.shopping.naver.com/book/catalog/59144649784',
@@ -490,6 +496,7 @@ const FEATURED = [
     rank:'이달의 추천 3위',
     title:'아이들이 쉬는 숨',
     author:'데브라 헨드릭 · 흐름출판 · 2026.03',
+    bio:'소아과 전문의 및 임상교수. 네바다대 의대 소아과 임상교수, 미 소아과학회 펠로우. 기후 변화가 아동 건강에 미치는 위험을 연구.',
     desc:'『침묵의 봄』을 잇는 기후과학의 고전. 기후변화가 아이들의 호흡기와 삶에 미치는 영향을 소아과 의사의 시선으로 고발한다.',
     image:'https://shopping-phinf.pstatic.net/main_5937434/59374347066.20260331110301.jpg',
     link:'https://search.shopping.naver.com/book/catalog/59374347066',
@@ -511,6 +518,7 @@ let curSlide=0;
         <div class="c-title">${{b.title}}</div>
         <div class="c-author">${{b.author}}</div>
         <div class="c-desc">${{b.desc}}</div>
+        <div class="c-bio">✍️ ${{b.bio}}</div>
         <a class="c-link" href="${{b.link}}" target="_blank">자세히 보기 →</a>
       </div>
     </div>`).join('');
@@ -859,7 +867,7 @@ if __name__ == "__main__":
     print("  SV Book 수집 시작")
     print("=" * 45)
 
-    sources = ["kyobo", "nanet"]
+    sources = ["kyobo", "nanet", "naver"]
     raw_books = collect(sources)
     print(f"\n총 {len(raw_books)}건 수집. 필터링 중...")
 
@@ -872,6 +880,23 @@ if __name__ == "__main__":
     removed_img = before_img - len(books)
     if removed_img:
         print(f"  → 이미지 없는 책 {removed_img}건 제거")
+
+    # 기존 데이터와 병합 (누적)
+    data_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sv_books_data.json")
+    if os.path.exists(data_path):
+        with open(data_path, "r", encoding="utf-8") as f:
+            existing = json.load(f)
+        existing_titles = {b["도서명"] for b in existing}
+        new_count = 0
+        for b in books:
+            if b["도서명"] not in existing_titles:
+                existing.append(b)
+                existing_titles.add(b["도서명"])
+                new_count += 1
+        books = existing
+        print(f"  → 기존 {len(existing) - new_count}권 + 신규 {new_count}권 = 총 {len(books)}권 누적")
+    with open(data_path, "w", encoding="utf-8") as f:
+        json.dump(books, f, ensure_ascii=False, indent=1)
 
     # AI 요약 (ANTHROPIC_API_KEY가 있을 때만 실행)
     if os.environ.get("ANTHROPIC_API_KEY"):
