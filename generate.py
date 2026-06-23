@@ -252,6 +252,40 @@ body{{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font
 .mbtn-secondary{{background:white;color:var(--ink2)}}
 .mbtn-secondary:hover{{background:var(--bg2)}}
 
+/* ── 미니 테스트 ── */
+.quiz-section{{background:linear-gradient(135deg,#eef1ff 0%,#f5f0ff 100%);border-bottom:1px solid var(--border);padding:0}}
+.quiz-inner{{max-width:720px;margin:0 auto;padding:48px 40px;text-align:center}}
+.quiz-label{{font-size:.65rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--purple);margin-bottom:12px}}
+.quiz-heading{{font-size:1.4rem;font-weight:800;color:var(--ink);margin-bottom:6px}}
+.quiz-sub{{font-size:.82rem;color:var(--ink3);margin-bottom:28px;font-weight:300}}
+.quiz-start-btn{{padding:10px 28px;border-radius:24px;border:none;background:linear-gradient(135deg,#4361ee,#7c3aed);color:white;font-size:.85rem;font-weight:700;cursor:pointer;font-family:var(--sans);transition:all .2s;box-shadow:0 4px 16px rgba(67,97,238,.3)}}
+.quiz-start-btn:hover{{transform:translateY(-2px);box-shadow:0 8px 24px rgba(67,97,238,.35)}}
+/* 진행 바 */
+.quiz-progress{{display:flex;gap:6px;justify-content:center;margin-bottom:28px}}
+.qp-dot{{width:32px;height:4px;border-radius:2px;background:var(--border);transition:background .25s}}
+.qp-dot.done{{background:var(--accent)}}
+.qp-dot.current{{background:var(--purple)}}
+/* 질문 */
+.quiz-q{{font-size:1.05rem;font-weight:700;color:var(--ink);margin-bottom:22px;line-height:1.5}}
+.quiz-options{{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:480px;margin:0 auto}}
+.quiz-opt{{padding:14px 16px;border-radius:12px;border:1.5px solid var(--border);background:white;cursor:pointer;text-align:left;transition:all .18s;font-family:var(--sans)}}
+.quiz-opt:hover{{border-color:var(--accent);background:var(--accent-light);transform:translateY(-2px);box-shadow:0 4px 12px rgba(67,97,238,.1)}}
+.quiz-opt-emoji{{font-size:1.2rem;margin-bottom:6px;display:block}}
+.quiz-opt-text{{font-size:.8rem;font-weight:600;color:var(--ink);line-height:1.45}}
+/* 결과 */
+.quiz-result{{animation:fadeUp .4s ease both}}
+.quiz-result-tag{{display:inline-block;padding:4px 14px;border-radius:20px;font-size:.7rem;font-weight:700;color:white;margin-bottom:14px}}
+.quiz-result-title{{font-size:1.15rem;font-weight:800;color:var(--ink);margin-bottom:18px}}
+.quiz-recs{{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:20px}}
+.quiz-rec{{display:flex;gap:10px;align-items:flex-start;background:white;border-radius:12px;border:1px solid var(--border);padding:12px;width:210px;text-align:left;transition:all .18s}}
+.quiz-rec:hover{{border-color:var(--accent);box-shadow:0 4px 16px rgba(67,97,238,.1)}}
+.quiz-rec img{{width:48px;height:68px;border-radius:6px;object-fit:cover;flex-shrink:0}}
+.quiz-rec-info{{min-width:0}}
+.quiz-rec-title{{font-size:.76rem;font-weight:700;color:var(--ink);margin-bottom:3px;line-height:1.35}}
+.quiz-rec-author{{font-size:.66rem;color:var(--ink4);font-weight:300}}
+.quiz-retry{{padding:8px 22px;border-radius:20px;border:1.5px solid var(--border);background:white;font-size:.78rem;font-weight:600;color:var(--ink2);cursor:pointer;font-family:var(--sans);transition:all .15s}}
+.quiz-retry:hover{{border-color:var(--accent);color:var(--accent)}}
+
 /* ── 스크롤 진행 바 ── */
 .progress-bar{{position:fixed;top:60px;left:0;height:2px;background:var(--accent);z-index:300;transition:width .1s linear;width:0%}}
 </style>
@@ -329,6 +363,16 @@ body{{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font
         <div><div class="icat-name">Global &amp; Strategy</div><div class="icat-desc">글로벌 질서 재편, 공급망, 국제 전략</div></div>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- 미니 테스트 -->
+<section class="quiz-section">
+  <div class="quiz-inner" id="quizBox">
+    <div class="quiz-label">Book Match Test</div>
+    <h2 class="quiz-heading">나에게 맞는 SV 도서는? 📚</h2>
+    <p class="quiz-sub">4개 질문에 답하면 딱 맞는 책 3권을 추천해드려요</p>
+    <button class="quiz-start-btn" onclick="quizStart()">테스트 시작하기</button>
   </div>
 </section>
 
@@ -678,6 +722,98 @@ async function triggerWorkflow(){{
 }}
 
 render();
+
+// ── 미니 테스트 ──
+const QUIZ_QS = [
+  {{
+    q: '요즘 가장 관심 가는 키워드는?',
+    opts: [
+      {{emoji:'🤖',text:'AI·기술이 바꾸는 미래',w:{{t:3,e:0,s:1,g:1}}}},
+      {{emoji:'🌱',text:'기후·환경·지속가능성',w:{{t:0,e:3,s:1,g:1}}}},
+      {{emoji:'🤝',text:'불평등·다양성·인구변화',w:{{t:0,e:1,s:3,g:1}}}},
+      {{emoji:'🌍',text:'글로벌 질서·국제 전략',w:{{t:1,e:0,s:0,g:3}}}},
+    ]
+  }},
+  {{
+    q: '오늘 하루를 한마디로 표현하면?',
+    opts: [
+      {{emoji:'💡',text:'새로운 걸 배우고 싶다',w:{{t:2,e:1,s:1,g:1}}}},
+      {{emoji:'😤',text:'세상이 왜 이런가 싶다',w:{{t:0,e:1,s:2,g:2}}}},
+      {{emoji:'🌿',text:'조용히 생각을 정리하고 싶다',w:{{t:0,e:2,s:2,g:0}}}},
+      {{emoji:'🔥',text:'뭔가 해내고 싶은 에너지가!',w:{{t:2,e:0,s:0,g:2}}}},
+    ]
+  }},
+  {{
+    q: '독서할 때 선호하는 스타일은?',
+    opts: [
+      {{emoji:'📊',text:'데이터·사례 중심 분석서',w:{{t:2,e:2,s:0,g:1}}}},
+      {{emoji:'💬',text:'사람 이야기·인터뷰',w:{{t:0,e:0,s:3,g:1}}}},
+      {{emoji:'🔮',text:'미래 전망·예측서',w:{{t:2,e:1,s:0,g:2}}}},
+      {{emoji:'📖',text:'깊이 있는 교양·인문서',w:{{t:1,e:1,s:2,g:1}}}},
+    ]
+  }},
+  {{
+    q: '연구원으로서 요즘 고민되는 주제는?',
+    opts: [
+      {{emoji:'⚙️',text:'AI가 일자리·사회를 어떻게 바꿀까',w:{{t:3,e:0,s:2,g:0}}}},
+      {{emoji:'🏭',text:'ESG·탄소중립 실현 방안',w:{{t:0,e:3,s:0,g:1}}}},
+      {{emoji:'👥',text:'저출생·고령화·사회안전망',w:{{t:0,e:0,s:3,g:1}}}},
+      {{emoji:'🌐',text:'공급망·패권 경쟁·에너지 전환',w:{{t:0,e:1,s:0,g:3}}}},
+    ]
+  }},
+];
+const CAT_KEYS = ['Tech & Future','ESG & Sustainability','Social & Human','Geopolitics & Strategy'];
+const CAT_LABELS = {{'Tech & Future':'Tech & Future 🤖','ESG & Sustainability':'ESG & Sustainability 🌱','Social & Human':'Social & Human 🤝','Geopolitics & Strategy':'Global & Strategy 🌍'}};
+const CAT_COLORS = {{'Tech & Future':'linear-gradient(135deg,#8b5cf6,#6366f1)','ESG & Sustainability':'linear-gradient(135deg,#10b981,#059669)','Social & Human':'linear-gradient(135deg,#ef4444,#dc2626)','Geopolitics & Strategy':'linear-gradient(135deg,#f59e0b,#d97706)'}};
+let quizStep=-1, quizScores={{t:0,e:0,s:0,g:0}};
+
+function quizStart(){{
+  quizStep=0; quizScores={{t:0,e:0,s:0,g:0}};
+  quizRender();
+}}
+function quizRender(){{
+  const box=document.getElementById('quizBox');
+  if(quizStep<QUIZ_QS.length){{
+    const qd=QUIZ_QS[quizStep];
+    box.innerHTML=`
+      <div class="quiz-progress">${{QUIZ_QS.map((_,i)=>`<div class="qp-dot${{i<quizStep?' done':i===quizStep?' current':''}}"></div>`).join('')}}</div>
+      <div class="quiz-q">${{qd.q}}</div>
+      <div class="quiz-options">${{qd.opts.map((o,i)=>`
+        <div class="quiz-opt" onclick="quizAnswer(${{i}})">
+          <span class="quiz-opt-emoji">${{o.emoji}}</span>
+          <span class="quiz-opt-text">${{o.text}}</span>
+        </div>`).join('')}}</div>`;
+  }} else {{
+    quizShowResult();
+  }}
+}}
+function quizAnswer(idx){{
+  const w=QUIZ_QS[quizStep].opts[idx].w;
+  quizScores.t+=w.t; quizScores.e+=w.e; quizScores.s+=w.s; quizScores.g+=w.g;
+  quizStep++;
+  quizRender();
+}}
+function quizShowResult(){{
+  const scores=[quizScores.t,quizScores.e,quizScores.s,quizScores.g];
+  const maxIdx=scores.indexOf(Math.max(...scores));
+  const cat=CAT_KEYS[maxIdx];
+  const matched=ALL.filter(b=>b['_category']===cat).sort((a,b)=>(b['_score']||0)-(a['_score']||0)).slice(0,3);
+  const box=document.getElementById('quizBox');
+  box.innerHTML=`<div class="quiz-result">
+    <div class="quiz-result-tag" style="background:${{CAT_COLORS[cat]}}">${{CAT_LABELS[cat]}}</div>
+    <div class="quiz-result-title">당신에게 추천하는 도서 3권</div>
+    <div class="quiz-recs">${{matched.map(b=>`
+      <a class="quiz-rec" href="${{esc(b['링크']||'#')}}" target="_blank" style="text-decoration:none;color:inherit">
+        <img src="${{esc(b['이미지']||'')}}" onerror="this.style.display='none'">
+        <div class="quiz-rec-info">
+          <div class="quiz-rec-title">${{esc(b['도서명'])}}</div>
+          <div class="quiz-rec-author">${{esc(b['저자']||'')}}</div>
+        </div>
+      </a>`).join('')}}</div>
+    <button class="quiz-retry" onclick="quizStart()">다시 해보기</button>
+    <button class="quiz-retry" style="margin-left:8px" onclick="filterCat('${{cat}}')">이 카테고리 전체 보기 →</button>
+  </div>`;
+}}
 </script>
 </body>
 </html>"""
