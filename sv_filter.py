@@ -272,28 +272,36 @@ def is_excluded(book: dict) -> tuple[bool, str]:
 
 
 def score_book(book: dict) -> int:
-    """SV Book 주제 관련성 점수 계산 (0~100점 척도)"""
+    """SV Book 주제 관련성 점수 계산 (1~5점)"""
     text = " ".join([
         book.get("도서명", ""),
         book.get("책 내용", ""),
         book.get("비고 (저자 설명)", ""),
     ]).lower()
 
-    score = 0
+    raw = 0
     for keywords, weight in TOPIC_SCORES:
         for kw in keywords:
             if kw.lower() in text:
-                score += weight
-                break  # 같은 그룹에서 중복 가산 방지
+                raw += weight
+                break
 
-    # 저자 설명이 있으면 소폭 가산 (전문가 저자 신호)
     author_info = book.get("비고 (저자 설명)", "") or book.get("저자", "")
     for kw in AUTHOR_BOOST_KEYWORDS:
         if kw in author_info:
-            score += 1
+            raw += 1
             break
 
-    return score
+    if raw <= 3:
+        return 1
+    elif raw <= 6:
+        return 2
+    elif raw <= 10:
+        return 3
+    elif raw <= 15:
+        return 4
+    else:
+        return 5
 
 
 # ── 4대 카테고리 분류 ──────────────────────────────────────────

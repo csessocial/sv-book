@@ -478,7 +478,7 @@ body{{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font
       <div class="guide-card">
         <div class="guide-card-icon">🎯</div>
         <h3 class="guide-card-title">관련도 점수</h3>
-        <p class="guide-card-desc">제목과 내용에서 <b>SV 핵심 키워드</b>(AI×사회가치, ESG, 기후변화, 불평등, 거버넌스 등)의 출현 빈도와 조합을 분석해 0~6점으로 채점합니다. AI×사회가치 복합 키워드는 최대 가산점을 받습니다.</p>
+        <p class="guide-card-desc">제목과 내용에서 <b>SV 핵심 키워드</b>(AI×사회가치, ESG, 기후변화, 불평등, 거버넌스 등)의 출현 빈도와 조합을 분석해 <b>1~5점</b>으로 채점합니다. 5점은 AI×사회가치 등 복합 주제를 깊이 다루는 도서입니다.</p>
       </div>
       <div class="guide-card">
         <div class="guide-card-icon">🏷️</div>
@@ -955,7 +955,7 @@ if __name__ == "__main__":
     print(f"\n총 {len(raw_books)}건 수집. 필터링 중...")
 
     from sv_filter import filter_and_score
-    books = filter_and_score(raw_books, min_score=2)
+    books = filter_and_score(raw_books, min_score=1)
 
     # 이미지 없는 책 제거
     before_img = len(books)
