@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SV Book — 2026.06.23 16:02</title>
+<title>SV Book — 2026.06.23 16:32</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -210,8 +210,8 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-
 .mbtn-secondary:hover{background:var(--bg2)}
 
 /* ── 미니 테스트 (플로팅) ── */
-.quiz-fab{position:fixed;bottom:28px;right:28px;z-index:400;width:56px;height:56px;border-radius:50%;border:none;background:linear-gradient(135deg,#4361ee,#7c3aed);color:white;font-size:1.5rem;cursor:pointer;box-shadow:0 6px 24px rgba(67,97,238,.4);display:flex;align-items:center;justify-content:center;transition:all .25s;animation:fabBounce 2s ease-in-out infinite 3s}
-.quiz-fab:hover{transform:scale(1.08);box-shadow:0 10px 32px rgba(67,97,238,.5)}
+.quiz-fab{position:fixed;bottom:28px;right:28px;z-index:400;border-radius:28px;border:none;background:linear-gradient(135deg,#4361ee,#7c3aed);color:white;font-size:.82rem;font-weight:700;cursor:pointer;box-shadow:0 6px 24px rgba(67,97,238,.4);display:flex;align-items:center;gap:8px;padding:0 20px;height:52px;transition:all .25s;font-family:var(--sans);animation:fabBounce 2s ease-in-out infinite 3s}
+.quiz-fab:hover{transform:scale(1.04);box-shadow:0 10px 32px rgba(67,97,238,.5)}
 .quiz-fab.hide{display:none}
 @keyframes fabBounce{0%,100%{transform:translateY(0)}15%{transform:translateY(-6px)}30%{transform:translateY(0)}}
 .quiz-fab-tip{position:fixed;bottom:92px;right:28px;z-index:400;background:white;border-radius:10px;padding:10px 16px;box-shadow:0 4px 20px rgba(0,0,0,.12);font-size:.78rem;font-weight:600;color:var(--ink);white-space:nowrap;animation:fadeUp .3s ease both;pointer-events:none}
@@ -267,7 +267,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-
 <nav class="nav" id="mainNav">
   <div class="nav-inner">
     <div class="nav-logo">SV<span>.</span>Book</div>
-    <span class="nav-meta">2026.06.23 16:02 기준 &nbsp;·&nbsp; 161권</span>
+    <span class="nav-meta">2026.06.23 16:32 기준 &nbsp;·&nbsp; 161권</span>
     <div class="nav-actions">
       <button class="nav-btn" onclick="openRefreshModal()">🔄 재수집</button>
       <button class="nav-btn" onclick="downloadCSV()">CSV</button>
@@ -338,8 +338,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-
 </section>
 
 <!-- 미니 테스트 (플로팅) -->
-<button class="quiz-fab" id="quizFab" onclick="openQuiz()" title="도서 추천 테스트">📚</button>
-<div class="quiz-fab-tip" id="quizTip" style="display:none">나에게 맞는 책 찾기!</div>
+<button class="quiz-fab" id="quizFab" onclick="openQuiz()">📚 나에게 맞는 책 찾기</button>
 <div class="quiz-popup" id="quizPopup">
   <div class="quiz-popup-header">
     <span class="quiz-popup-title">📚 Book Match Test</span>
@@ -748,15 +747,11 @@ let quizStep=-1, quizScores={t:0,e:0,s:0,g:0};
 function openQuiz(){
   document.getElementById('quizPopup').classList.add('show');
   document.getElementById('quizFab').classList.add('hide');
-  document.getElementById('quizTip').style.display='none';
 }
 function closeQuiz(){
   document.getElementById('quizPopup').classList.remove('show');
   document.getElementById('quizFab').classList.remove('hide');
 }
-// 3초 후 툴팁 표시, 6초 후 사라짐
-setTimeout(()=>{document.getElementById('quizTip').style.display='block';},3000);
-setTimeout(()=>{document.getElementById('quizTip').style.display='none';},7000);
 
 function quizStart(){
   quizStep=0; quizScores={t:0,e:0,s:0,g:0};
