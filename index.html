@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SV Book — 2026.06.23 17:27</title>
+<title>SV Book — 2026.06.24 08:44</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -35,10 +35,10 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-
 /* ── 네비게이션 ── */
 .nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(248,249,255,.93);backdrop-filter:blur(16px);border-bottom:1px solid rgba(221,224,245,.7);transition:box-shadow .2s}
 .nav.scrolled{box-shadow:0 2px 24px rgba(67,97,238,.08)}
-.nav-inner{max-width:1320px;margin:0 auto;padding:0 40px;height:60px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.nav-inner{max-width:1320px;margin:0 auto;padding:0 40px;height:60px;display:flex;align-items:center;gap:16px}
 .nav-logo{font-size:1.15rem;font-weight:800;background:linear-gradient(135deg,#4361ee,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-.3px;white-space:nowrap}
 .nav-meta{font-size:.72rem;color:var(--ink4);font-weight:300;white-space:nowrap}
-.nav-actions{display:flex;gap:8px;align-items:center}
+.nav-actions{display:flex;gap:8px;align-items:center;margin-left:auto}
 .nav-btn{padding:6px 16px;border-radius:8px;font-family:var(--sans);font-size:.75rem;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:white;color:var(--ink2);transition:all .15s;white-space:nowrap}
 .nav-btn:hover{background:var(--accent-light);border-color:var(--accent);color:var(--accent)}
 .nav-btn.primary{background:linear-gradient(135deg,#4361ee,#7c3aed);color:white;border:none}
@@ -284,8 +284,9 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-
 <nav class="nav" id="mainNav">
   <div class="nav-inner">
     <div class="nav-logo">SV<span>.</span>Book</div>
-    <span class="nav-meta">2026.06.23 17:27 기준 &nbsp;·&nbsp; 377권</span>
+    <span class="nav-meta">2026.06.24 08:44 기준 · 377권</span>
     <div class="nav-actions">
+      <button class="nav-btn" onclick="document.getElementById('guideSection').scrollIntoView({behavior:'smooth'})">📖 가이드</button>
       <button class="nav-btn" onclick="openRefreshModal()">🔄 재수집</button>
       <button class="nav-btn" onclick="downloadCSV()">CSV</button>
     </div>
@@ -411,7 +412,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-
 </div>
 
 <!-- 사이트 가이드 -->
-<section class="guide-section">
+<section class="guide-section" id="guideSection">
   <div class="guide-inner">
     <div class="guide-header">
       <div class="guide-label">Site Guide</div>
@@ -734,7 +735,7 @@ function downloadCSV(){
   books.forEach((b,i)=>rows.push([i+1,b['_category']||'',b['매체명']||'',b['도서명']||'',b['저자']||'',b['책 내용']||'',b['출판사']||'',b['출판일']||'',b['링크']||'']));
   const csv='\uFEFF'+rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');
   const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
-  a.download='SV_Book_20260623.csv';a.click();
+  a.download='SV_Book_20260624.csv';a.click();
 }
 
 // 모달

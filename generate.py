@@ -10,6 +10,11 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 
+import re as _re
+
+def _norm_title(t):
+    return _re.sub(r'[\s:·\-—()（）]', '', t).lower()
+
 def collect(sources: list[str]) -> list[dict]:
     all_books = []
     seen = set()
@@ -27,8 +32,9 @@ def collect(sources: list[str]) -> list[dict]:
         else:
             from nanet_scraper import fetch_all_books
         for b in fetch_all_books():
-            if b["도서명"] not in seen:
-                seen.add(b["도서명"])
+            key = _norm_title(b["도서명"])
+            if key not in seen:
+                seen.add(key)
                 all_books.append(b)
 
     return all_books
@@ -80,10 +86,10 @@ body{{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font
 /* ── 네비게이션 ── */
 .nav{{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(248,249,255,.93);backdrop-filter:blur(16px);border-bottom:1px solid rgba(221,224,245,.7);transition:box-shadow .2s}}
 .nav.scrolled{{box-shadow:0 2px 24px rgba(67,97,238,.08)}}
-.nav-inner{{max-width:1320px;margin:0 auto;padding:0 40px;height:60px;display:flex;align-items:center;justify-content:space-between;gap:20px}}
+.nav-inner{{max-width:1320px;margin:0 auto;padding:0 40px;height:60px;display:flex;align-items:center;gap:16px}}
 .nav-logo{{font-size:1.15rem;font-weight:800;background:linear-gradient(135deg,#4361ee,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-.3px;white-space:nowrap}}
 .nav-meta{{font-size:.72rem;color:var(--ink4);font-weight:300;white-space:nowrap}}
-.nav-actions{{display:flex;gap:8px;align-items:center}}
+.nav-actions{{display:flex;gap:8px;align-items:center;margin-left:auto}}
 .nav-btn{{padding:6px 16px;border-radius:8px;font-family:var(--sans);font-size:.75rem;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:white;color:var(--ink2);transition:all .15s;white-space:nowrap}}
 .nav-btn:hover{{background:var(--accent-light);border-color:var(--accent);color:var(--accent)}}
 .nav-btn.primary{{background:linear-gradient(135deg,#4361ee,#7c3aed);color:white;border:none}}
@@ -329,8 +335,9 @@ body{{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font
 <nav class="nav" id="mainNav">
   <div class="nav-inner">
     <div class="nav-logo">SV<span>.</span>Book</div>
-    <span class="nav-meta">{now} 기준 &nbsp;·&nbsp; {len(books)}권</span>
+    <span class="nav-meta">{now} 기준 · {len(books)}권</span>
     <div class="nav-actions">
+      <button class="nav-btn" onclick="document.getElementById('guideSection').scrollIntoView({{behavior:'smooth'}})">📖 가이드</button>
       <button class="nav-btn" onclick="openRefreshModal()">🔄 재수집</button>
       <button class="nav-btn" onclick="downloadCSV()">CSV</button>
     </div>
@@ -456,7 +463,7 @@ body{{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font
 </div>
 
 <!-- 사이트 가이드 -->
-<section class="guide-section">
+<section class="guide-section" id="guideSection">
   <div class="guide-inner">
     <div class="guide-header">
       <div class="guide-label">Site Guide</div>
@@ -962,12 +969,13 @@ if __name__ == "__main__":
     if os.path.exists(data_path):
         with open(data_path, "r", encoding="utf-8") as f:
             existing = json.load(f)
-        existing_titles = {b["도서명"] for b in existing}
+        existing_titles = {_norm_title(b["도서명"]) for b in existing}
         new_count = 0
         for b in books:
-            if b["도서명"] not in existing_titles:
+            key = _norm_title(b["도서명"])
+            if key not in existing_titles:
                 existing.append(b)
-                existing_titles.add(b["도서명"])
+                existing_titles.add(key)
                 new_count += 1
         books = existing
         print(f"  → 기존 {len(existing) - new_count}권 + 신규 {new_count}권 = 총 {len(books)}권 누적")
