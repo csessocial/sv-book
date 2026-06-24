@@ -136,10 +136,10 @@ body{{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font
 .c-book-main:hover img{{transform:translateY(-8px) rotate(-1.5deg)}}
 .c-info{{flex:1;min-width:0}}
 .c-rank{{font-size:.6rem;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;background:linear-gradient(90deg,#7dd3fc,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}}
-.c-title{{font-size:.95rem;font-weight:800;color:white;line-height:1.38;margin-bottom:6px}}
-.c-author{{font-size:.72rem;color:rgba(255,255,255,.48);margin-bottom:12px;font-weight:300}}
-.c-desc{{font-size:.73rem;color:rgba(255,255,255,.58);line-height:1.7;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;font-weight:300}}
-.c-bio{{font-size:.68rem;color:rgba(167,139,250,.7);line-height:1.6;margin-top:8px;font-weight:400;font-style:italic;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}}
+.c-title{{font-size:1rem;font-weight:800;color:white;line-height:1.38;margin-bottom:6px}}
+.c-author{{font-size:.74rem;color:rgba(255,255,255,.65);margin-bottom:10px;font-weight:400}}
+.c-desc{{font-size:.76rem;color:rgba(255,255,255,.82);line-height:1.72;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;font-weight:400}}
+.c-bio{{font-size:.72rem;color:#c4b5fd;line-height:1.65;margin-top:10px;font-weight:500;padding:8px 12px;background:rgba(139,92,246,.15);border-left:3px solid #a78bfa;border-radius:0 8px 8px 0;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}}
 .c-link{{display:inline-flex;align-items:center;gap:4px;margin-top:14px;font-size:.71rem;font-weight:700;color:white;text-decoration:none;background:linear-gradient(135deg,rgba(67,97,238,.5),rgba(124,58,237,.5));border:1px solid rgba(255,255,255,.2);padding:5px 14px;border-radius:20px;transition:all .22s;backdrop-filter:blur(4px)}}
 .c-link:hover{{background:linear-gradient(135deg,rgba(67,97,238,.75),rgba(124,58,237,.75));border-color:rgba(255,255,255,.4)}}
 /* 화살표 + 인디케이터 */
