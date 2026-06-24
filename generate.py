@@ -13,7 +13,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import re as _re
 
 def _norm_title(t):
-    return _re.sub(r'[\s:·\-—()（）]', '', t).lower()
+    t = _re.split(r'[:\-—–|/]', t)[0]
+    return _re.sub(r'[^가-힣a-zA-Z0-9]', '', t).lower()
 
 def collect(sources: list[str]) -> list[dict]:
     all_books = []
