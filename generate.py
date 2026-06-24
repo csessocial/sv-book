@@ -921,7 +921,8 @@ function quizShowResult(){{
   const scores=[quizScores.t,quizScores.e,quizScores.s,quizScores.g];
   const maxIdx=scores.indexOf(Math.max(...scores));
   const cat=CAT_KEYS[maxIdx];
-  const matched=ALL.filter(b=>b['_category']===cat).sort((a,b)=>(b['_score']||0)-(a['_score']||0)).slice(0,3);
+  const pool=ALL.filter(b=>b['_category']===cat&&(b['_score']||0)>=4);
+  const matched=(pool.length>=3?pool:ALL.filter(b=>(b['_score']||0)>=4)).sort((a,b)=>(b['_score']||0)-(a['_score']||0)).slice(0,3);
   const box=document.getElementById('quizBox');
   box.innerHTML=`<div class="quiz-result">
     <div class="quiz-result-tag" style="background:${{CAT_COLORS[cat]}}">${{CAT_LABELS[cat]}}</div>
