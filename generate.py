@@ -519,7 +519,7 @@ body{{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font
       <div class="guide-card">
         <div class="guide-card-icon">📡</div>
         <h3 class="guide-card-title">데이터 수집</h3>
-        <p class="guide-card-desc">매주 월요일 오전 10시(KST), <b>교보문고</b> · <b>국회도서관</b> · <b>네이버 도서</b>에서 SV 관련 키워드로 신간을 자동 수집합니다. 수집된 데이터는 누적되어 계속 쌓입니다.</p>
+        <p class="guide-card-desc">매주 월요일 오전 10시(KST), <b>교보문고</b> · <b>국회도서관</b> · <b>네이버 도서</b>에서 SV 관련 키워드로 신간을 자동 수집합니다. <b>출판일 기준 최근 12개월</b> 이내 도서만 포함되며, 수집된 데이터는 누적되어 계속 쌓입니다.</p>
       </div>
       <div class="guide-card">
         <div class="guide-card-icon">🎯</div>
