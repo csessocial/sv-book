@@ -286,7 +286,8 @@ CURATED_TITLES = [
     "최후의 인구론", "적응하라 기후위기는 멈추지 않는다",
     "무엇이 대전환을 만들었는가", "빅벳", "불확실성에 맞서는 기술",
     "질서없음", "질서 없음", "휴먼코드", "휴먼 코드",
-    "사회연대경제", "필연적 혼자의 시대",
+    "필연적 혼자의 시대",
+    "사회연대경제 (21세기",
     "주의! 거짓이 포함되어 있을 수 있음",
     # 엑셀 선정 해외 석학 대표작
     "뉴 워", "사회적 자본", "질서의 종말",
@@ -311,12 +312,12 @@ def score_book(book: dict) -> int:
     """
     title = book.get("도서명", "")
 
+    # 원론서/교과서급은 무조건 1점 (CURATED보다 우선)
+    if any(dt in title for dt in DEMOTED_TITLES):
+        return 1
     # 편집 선정 도서는 무조건 5점
     if any(ct in title for ct in CURATED_TITLES):
         return 5
-    # 원론서/교과서급은 무조건 1점
-    if any(dt in title for dt in DEMOTED_TITLES):
-        return 1
     content = book.get("책 내용", "")
     full = (title + " " + content).lower()
     title_lower = title.lower()
