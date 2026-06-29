@@ -47,6 +47,8 @@ EXCLUDE_TITLE_PATTERNS = [
     r"(개론|입문|기초|기본).*(기술|공학|화학|물리|수학|생물|지구과학)",
     r"(수소|원자력|핵융합|반도체|배터리).*(기술|개론|입문|기초|공학|원리)",
     r"(대학교재|교과서|강의교재|학습서)$",
+    r"(즉각퇴진|탄핵.*백서|촛불.*기록)",
+    r"(의약품|의료기기|식품|화장품|용품)별\s*(시장|사업)",
 ]
 
 EXCLUDE_PUBLISHERS = {
@@ -341,6 +343,18 @@ def score_book(book: dict) -> int:
     author_info = (book.get("비고 (저자 설명)", "") or "") + " " + (book.get("저자", "") or "")
     content_full = content + " " + (book.get("책 내용", "") or "")
     # 2점: 석학·해외 교수·유명 학자
+    # 엑셀 선정 해외 석학 저자 (이름 직접 매칭)
+    KNOWN_SCHOLARS = [
+        "폴 몰런드", "바츨라프 스밀", "데이비드 스피겔할터", "헬렌 톰슨",
+        "오데드 갤로어", "로버트 핀다이크", "유리 그니지", "라지브 샤",
+        "앨릭스 에드먼스", "팀 하포드", "제이슨 솅커", "로베르 부아예",
+        "무스타파 술레이만", "그레이엄 리", "키코 아네라스", "로버트 퍼트넘",
+        "이브 헤롤", "데브라 헨드릭", "로버트 캐플런", "아서 스넬",
+        "제리 카플란", "한나 리치", "샘 프리드먼", "요르겐 랜더스",
+        "올리버 프랭클린", "니크라스 뢴벡", "제이슨 히켈", "린다 유",
+        "Hannah Ritchie", "Sherry Madera", "Netta Jenkins", "Rajiv Shah",
+        "Mirjam Gruber", "Jason Schenker", "Tim Harford",
+    ]
     SCHOLAR_KEYWORDS = [
         "석좌교수", "석좌 교수", "distinguished professor",
         "MIT", "하버드", "스탠퍼드", "옥스퍼드", "케임브리지", "프린스턴",
@@ -350,6 +364,8 @@ def score_book(book: dict) -> int:
         "노벨", "Nobel", "세계적", "세계 최고",
         "빌 게이츠 추천", "빌게이츠 추천", "유발 하라리",
         "다보스", "TED", "세계경제포럼", "WEF",
+        "UC 샌디에이고", "매니토바", "런던경영대", "CNRS",
+        "록펠러재단", "딥마인드", "DeepMind", "록펠러",
     ]
     EXPERT_KEYWORDS = [
         "교수", "박사", "연구원", "연구소", "소장", "원장",
@@ -358,7 +374,10 @@ def score_book(book: dict) -> int:
         "professor", "PhD", "researcher", "director",
     ]
     author_and_desc = author_info + " " + content_full
-    if any(kw in author_and_desc for kw in SCHOLAR_KEYWORDS):
+    author_name = book.get("저자", "") or ""
+    if any(name in author_name for name in KNOWN_SCHOLARS):
+        pts += 2
+    elif any(kw in author_and_desc for kw in SCHOLAR_KEYWORDS):
         pts += 2
     elif any(kw in author_info for kw in EXPERT_KEYWORDS):
         pts += 1
