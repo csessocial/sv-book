@@ -276,6 +276,22 @@ def is_excluded(book: dict) -> tuple[bool, str]:
     return False, ""
 
 
+
+# 편집 선정 도서 — 무조건 5점 (알고리즘보다 큐레이션 우선)
+CURATED_TITLES = [
+    # 이달의 추천 (캐러셀)
+    "이토록 인간적인 능력", "경계 없음", "경계없음", "호모 카르보",
+    "AI 이후의 미래 어떻게 될 것인가", "인간을 인간답게 만드는 불완전함에 대하여",
+    # 원장님 Pick
+    "최후의 인구론", "적응하라 기후위기는 멈추지 않는다",
+    "무엇이 대전환을 만들었는가", "빅벳", "불확실성에 맞서는 기술",
+    "질서없음", "질서 없음", "휴먼코드", "휴먼 코드",
+    "사회연대경제", "필연적 혼자의 시대",
+    "주의! 거짓이 포함되어 있을 수 있음",
+    # 엑셀 선정 해외 석학 대표작
+    "뉴 워", "사회적 자본", "질서의 종말",
+]
+
 def score_book(book: dict) -> int:
     """SV Book 주제 관련성 점수 계산 (1~5점)
 
@@ -285,6 +301,10 @@ def score_book(book: dict) -> int:
     - 원론서/개론서가 아닌 구체적 thesis 제시
     """
     title = book.get("도서명", "")
+
+    # 편집 선정 도서는 무조건 5점
+    if any(ct in title for ct in CURATED_TITLES):
+        return 5
     content = book.get("책 내용", "")
     full = (title + " " + content).lower()
     title_lower = title.lower()
@@ -444,9 +464,11 @@ def score_book(book: dict) -> int:
     # 학술 출판사
     if publisher in ACADEMIC_PUBS:
         penalty += 1
-    # 키워드 나열형 제목 (A와 B, A·B·C 등 2개 이상 핵심어 조합)
+    # 키워드 나열형 제목 (A와 B, A·B·C 등)
     title_sv_count = sum(1 for kw in ["ESG", "SDG", "AI", "기후", "탄소", "거버넌스", "지속가능", "사회적"] if kw in title)
     if title_sv_count >= 3:
+        penalty += 2
+    elif title_sv_count >= 2 and not any(re.search(p, title) for p in THESIS_PATTERNS):
         penalty += 1
     # 저자 다수(외 7, 외 11 등) + 나열형 = 학술서
     author = book.get("저자", "")
