@@ -271,7 +271,7 @@ body{{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font
 .pick-modal-close:hover{{background:rgba(0,0,0,.5)}}
 .pick-banner{{height:180px;background:linear-gradient(135deg,#fef3c7 0%,#a7f3d0 50%,#bfdbfe 100%);display:flex;align-items:flex-end;position:relative;border-radius:20px 20px 0 0;overflow:hidden}}
 .pick-banner-img{{position:absolute;inset:0;object-fit:cover;width:100%;height:100%}}
-.pick-banner-ov{{padding:20px 28px;width:100%;background:linear-gradient(to top,rgba(0,0,0,.5),transparent)}}
+.pick-banner-ov{{padding:20px 28px;width:100%;background:linear-gradient(to top,rgba(0,0,0,.55) 0%,rgba(0,0,0,.2) 60%,transparent 100%);position:relative;z-index:2}}
 .pick-banner-t{{font-size:1.3rem;font-weight:800;color:white;text-shadow:0 2px 8px rgba(0,0,0,.3)}}
 .pick-banner-s{{font-size:.78rem;color:rgba(255,255,255,.85);font-weight:300;margin-top:4px}}
 /* 캐러셀 1권씩 */
