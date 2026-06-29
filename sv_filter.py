@@ -377,6 +377,47 @@ def score_book(book: dict) -> int:
     if content_sv_hits >= 3 and pts < 3:
         pts += 1
 
+    # ── 6) 원론서·교과서·리포트 감점 (-1~-2점) ──
+    TEXTBOOK_PATTERNS = [
+        r"(의 이해|의 기초|의 원리|의 원론|의 개론|의 모든 것)",
+        r"(입문|개론|원론|총론|통론|교과서|학개론|학원론)$",
+        r"(큰글자책|큰글씨|대활자)",
+        r"(제\d+판|개정판|증보판|\d+판$)",
+        r"(유망\s*핵심\s*기술|시장\s*전망과\s*사업화|사업\s*분석|시장동향)",
+        r"(중견기업용|산업\s*분석|실무\s*가이드|실무서|매뉴얼)",
+        r"SDG.*ESG.*보고서",
+        r"(경영보고서|지속가능.*보고서|보고서.*모든 것)",
+        r"(건축기준|설계기준|시공기준|기술기준)",
+    ]
+    TEXTBOOK_CONTENT = [
+        "교재", "강의", "학습목표", "연습문제", "학기",
+        "수업", "커리큘럼", "교육과정", "학점",
+    ]
+    # 학술·전문 출판사 감점
+    ACADEMIC_PUBS = {
+        "커뮤니케이션북스", "한국학술정보", "박영사", "법문사", "율곡출판사",
+        "교문사", "학지사", "청목출판사", "도서출판 오래", "진한엠앤비",
+    }
+    publisher = book.get("출판사", "")
+
+    penalty = 0
+    if any(re.search(pat, title) for pat in TEXTBOOK_PATTERNS):
+        penalty += 2
+    elif any(kw in content[:200] for kw in TEXTBOOK_CONTENT):
+        penalty += 1
+    # 학술 출판사
+    if publisher in ACADEMIC_PUBS:
+        penalty += 1
+    # 키워드 나열형 제목 (A와 B, A·B·C 등 2개 이상 핵심어 조합)
+    title_sv_count = sum(1 for kw in ["ESG", "SDG", "AI", "기후", "탄소", "거버넌스", "지속가능", "사회적"] if kw in title)
+    if title_sv_count >= 3:
+        penalty += 1
+    # 저자 다수(외 7, 외 11 등) + 나열형 = 학술서
+    author = book.get("저자", "")
+    if re.search(r"외\s*\d+", author) and re.search(r"(와|과|·|,)", title):
+        penalty += 1
+
+    pts -= penalty
     return max(1, min(5, pts))
 
 
