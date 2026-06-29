@@ -275,36 +275,109 @@ def is_excluded(book: dict) -> tuple[bool, str]:
 
 
 def score_book(book: dict) -> int:
-    """SV Book 주제 관련성 점수 계산 (1~5점)"""
-    text = " ".join([
-        book.get("도서명", ""),
-        book.get("책 내용", ""),
-        book.get("비고 (저자 설명)", ""),
-    ]).lower()
+    """SV Book 주제 관련성 점수 계산 (1~5점)
 
-    raw = 0
-    for keywords, weight in TOPIC_SCORES:
-        for kw in keywords:
-            if kw.lower() in text:
-                raw += weight
-                break
+    CSES 선정 도서 기준:
+    - 전문가가 쓴 날카로운 시각의 교양서/전망서
+    - AI×사회, 기후×경제, 인구×정책 등 교차 주제
+    - 원론서/개론서가 아닌 구체적 thesis 제시
+    """
+    title = book.get("도서명", "")
+    content = book.get("책 내용", "")
+    full = (title + " " + content).lower()
+    title_lower = title.lower()
 
-    author_info = book.get("비고 (저자 설명)", "") or book.get("저자", "")
-    for kw in AUTHOR_BOOST_KEYWORDS:
-        if kw in author_info:
-            raw += 1
-            break
+    pts = 0
 
-    if raw <= 3:
-        return 1
-    elif raw <= 6:
-        return 2
-    elif raw <= 10:
-        return 3
-    elif raw <= 15:
-        return 4
-    else:
-        return 5
+    # ── 1) 제목 주제 매칭 (0~2점) ──
+    # 제목에 핵심 SV 키워드가 직접 등장하면 강한 신호
+    TITLE_TIER1 = [  # 2점: 교차 주제 / CSES 핵심
+        "사회적가치", "사회가치", "social value",
+        "AI 시대", "AI와 사회", "AI와 인간", "인공지능과 인간",
+        "AI 거버넌스", "AI 윤리", "알고리즘",
+        "사회연대경제", "임팩트", "ESG",
+        "기후위기", "기후변화", "탄소중립", "넷제로",
+        "사회혁신", "경제민주화",
+    ]
+    TITLE_TIER2 = [  # 1점: 관련 주제
+        "불평등", "인구", "저출생", "고령화", "인재",
+        "거버넌스", "민주주의", "지정학", "패권", "국제질서",
+        "에너지", "탄소", "지속가능", "다양성", "포용",
+        "자본주의", "노동", "일자리", "미래사회", "미래",
+        "인간", "로봇", "디지털", "전환", "혁신",
+        "세계", "글로벌", "경제", "사회", "공동체",
+        "기후", "환경", "생태", "여성", "젠더",
+        "inequality", "climate", "sustainability", "democracy",
+        "geopolitics", "future", "AI", "governance",
+    ]
+    t1_match = any(kw.lower() in title_lower for kw in TITLE_TIER1)
+    t2_match = any(kw.lower() in title_lower for kw in TITLE_TIER2)
+    if t1_match:
+        pts += 2
+    elif t2_match:
+        pts += 1
+
+    # ── 2) 내용 주제 깊이 (0~2점) ──
+    THEME_GROUPS = [
+        ["AI", "인공지능", "로봇", "알고리즘", "디지털", "자동화"],
+        ["기후", "탄소", "환경", "에너지", "생태", "넷제로", "온난화"],
+        ["불평등", "빈곤", "격차", "형평", "공정", "정의"],
+        ["인구", "저출생", "고령화", "이주", "난민", "인구감소"],
+        ["거버넌스", "민주주의", "정치", "정책", "제도", "시민"],
+        ["경제", "자본주의", "노동", "일자리", "산업", "성장"],
+        ["사회", "공동체", "연대", "복지", "돌봄", "인권", "문명"],
+        ["지정학", "패권", "국제", "글로벌", "안보", "전쟁", "질서"],
+    ]
+    themes_hit = sum(
+        1 for grp in THEME_GROUPS
+        if any(kw in full for kw in grp)
+    )
+    if themes_hit >= 4:
+        pts += 2
+    elif themes_hit >= 2:
+        pts += 1
+
+    # ── 3) 저자 전문성 (0~1점) ──
+    author_info = (book.get("비고 (저자 설명)", "") or "") + " " + (book.get("저자", "") or "")
+    EXPERT_KEYWORDS = [
+        "교수", "석좌교수", "박사", "연구원", "연구소", "소장", "원장",
+        "CEO", "대표", "전문가", "저널리스트", "작가", "기자",
+        "이사", "위원", "센터장", "학회",
+        "professor", "PhD", "researcher", "director",
+    ]
+    if any(kw in author_info for kw in EXPERT_KEYWORDS):
+        pts += 1
+
+    # ── 4) 전망·논쟁서 보너스 (0~1점) ──
+    THESIS_PATTERNS = [
+        r"어떻게.*(될|바꾸|만드|할)",
+        r"왜.*(않|못|없|실패|탈퇴|부족)",
+        r"(의 미래|의 시대|의 탄생|의 종말|의 전쟁)",
+        r"(을 바꾸|를 바꾸|을 만드|를 만드|이 온다|가 온다)",
+        r"(무엇을|어디로|누가|무엇이).*(할|갈|될|인가|일까)",
+        r"(넘어|너머|이후|다음|전환|대전환|응전)",
+        r"(선언|선택|도전|혁명|위기|충격|전망|예보)",
+        r"(사라지|무너지|붕괴|멸종|절벽|습격)",
+    ]
+    # 제목 또는 내용에서 thesis 패턴 매칭
+    if any(re.search(pat, title) for pat in THESIS_PATTERNS):
+        pts += 1
+    elif any(re.search(pat, content[:100]) for pat in THESIS_PATTERNS):
+        pts += 1
+
+    # ── 5) 내용 SV 밀도 보너스 (0~1점) ──
+    # 제목에 키워드가 없더라도, 내용에 SV 핵심어가 3개 이상이면 보정
+    SV_DENSITY_KW = [
+        "사회적가치", "탄소", "기후", "불평등", "ESG", "거버넌스",
+        "인공지능", "AI", "민주주의", "에너지 전환", "지속가능",
+        "인구", "사회혁신", "임팩트", "다양성", "공동체",
+        "문명", "인류", "윤리", "공정", "연대",
+    ]
+    content_sv_hits = sum(1 for kw in SV_DENSITY_KW if kw.lower() in full)
+    if content_sv_hits >= 3 and pts < 3:
+        pts += 1
+
+    return max(1, min(5, pts))
 
 
 # ── 4대 카테고리 분류 ──────────────────────────────────────────
