@@ -292,6 +292,15 @@ CURATED_TITLES = [
     "뉴 워", "사회적 자본", "질서의 종말",
 ]
 
+# 원론서/교과서급 — 무조건 1점 (수동 감점)
+DEMOTED_TITLES = [
+    "기후위기, 정말 인류가 만든 비극일까",
+    "ESG 딜레마",
+    "공공서비스 설계 사회연대경제 민간위탁",
+    "글로벌 대전환과 정책기조 피벗을 넘어서",
+    "지구환경과 기후변화",
+]
+
 def score_book(book: dict) -> int:
     """SV Book 주제 관련성 점수 계산 (1~5점)
 
@@ -305,6 +314,9 @@ def score_book(book: dict) -> int:
     # 편집 선정 도서는 무조건 5점
     if any(ct in title for ct in CURATED_TITLES):
         return 5
+    # 원론서/교과서급은 무조건 1점
+    if any(dt in title for dt in DEMOTED_TITLES):
+        return 1
     content = book.get("책 내용", "")
     full = (title + " " + content).lower()
     title_lower = title.lower()
