@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SV Book — 2026.06.29 15:13</title>
+<title>SV Book — 2026.06.29 15:18</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -54,10 +54,9 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-
 @keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.08);opacity:.75}}
 .hero-orb{position:absolute;border-radius:50%;pointer-events:none}
 .hero-orb-1{width:300px;height:300px;top:10%;right:5%;background:rgba(67,97,238,.2);filter:blur(60px);animation:float1 7s ease-in-out infinite}
-.hero-orb-2{width:120px;height:120px;top:16px;left:50%;transform:translateX(-50%);filter:none;pointer-events:auto;cursor:pointer;background:rgba(255,255,255,.07);backdrop-filter:blur(8px);border:1.5px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;transition:all .25s;z-index:5}
-.hero-orb-2:hover{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.35);transform:translateX(-50%) scale(1.06)}
-.hero-orb-2 .orb-icon{font-size:1.6rem}
-.hero-orb-2 .orb-text{font-size:.6rem;font-weight:700;color:rgba(255,255,255,.8);letter-spacing:.5px}
+.hero-pick-btn{display:inline-flex;align-items:center;gap:8px;margin-top:24px;padding:12px 24px;background:white;color:var(--ink);border-radius:12px;font-size:.85rem;font-weight:800;cursor:pointer;box-shadow:0 8px 28px rgba(0,0,0,.2);transition:all .25s;letter-spacing:-.2px}
+.hero-pick-btn:hover{transform:translateY(-3px);box-shadow:0 14px 40px rgba(67,97,238,.3)}
+.hero-pick-arrow{color:var(--accent);font-weight:700}
 @keyframes float1{0%,100%{transform:translateY(0) translateX(0)}50%{transform:translateY(-20px) translateX(10px)}}
 @keyframes float2{0%,100%{transform:translateY(0)}50%{transform:translateY(15px)}}
 .hero-content{position:relative;z-index:1;padding:72px 0 80px 0;display:flex;flex-direction:column;justify-content:center;animation:fadeUp .6s ease both}
@@ -301,9 +300,8 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-
 <nav class="nav" id="mainNav">
   <div class="nav-inner">
     <div class="nav-logo">SV<span>.</span>Book</div>
-    <span class="nav-meta">2026.06.29 15:13 기준 · 353권</span>
+    <span class="nav-meta">2026.06.29 15:18 기준 · 353권</span>
     <div class="nav-actions">
-      <button class="nav-btn primary" onclick="openPickModal()">⭐ 원장님 Pick!</button>
       <button class="nav-btn" onclick="document.getElementById('guideSection').scrollIntoView({behavior:'smooth'})">📖 가이드</button>
       <button class="nav-btn" onclick="openRefreshModal()">🔄 재수집</button>
       <button class="nav-btn" onclick="downloadCSV()">CSV</button>
@@ -318,7 +316,6 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-
 <section class="hero" id="heroSection">
   <div class="hero-bg">
     <div class="hero-orb hero-orb-1"></div>
-    <div class="hero-orb hero-orb-2" onclick="openPickModal()"><span class="orb-icon">⭐</span><span class="orb-text">원장님 Pick</span></div>
   </div>
   <div class="hero-grid">
   <div class="hero-content">
@@ -332,6 +329,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-
       <button class="hero-cat" data-cat="Social & Human" onclick="heroSetCat(this)">🤝 Social &amp; Human</button>
       <button class="hero-cat" data-cat="Geopolitics & Strategy" onclick="heroSetCat(this)">🌍 Global</button>
     </div>
+    <div class="hero-pick-btn" onclick="openPickModal()"><span>⭐</span> 원장님 Pick! <span class="hero-pick-arrow">→</span></div>
   </div>
   <div class="hero-visual">
     <div class="carousel" id="heroCarousel">
