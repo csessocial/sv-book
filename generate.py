@@ -1067,8 +1067,13 @@ function quizShowResult(){{
   const scores=[quizScores.t,quizScores.e,quizScores.s,quizScores.g];
   const maxIdx=scores.indexOf(Math.max(...scores));
   const cat=CAT_KEYS[maxIdx];
-  const pool=ALL.filter(b=>b['_category']===cat&&(b['_score']||0)>=4);
-  const matched=(pool.length>=3?pool:ALL.filter(b=>(b['_score']||0)>=4)).sort((a,b)=>(b['_score']||0)-(a['_score']||0)).slice(0,3);
+  let pool=ALL.filter(b=>b['_category']===cat&&(b['_score']||0)>=3);
+  if(pool.length<5) pool=ALL.filter(b=>(b['_score']||0)>=3);
+  // 점수 높은 순 정렬 후 상위 15권에서 랜덤 3권 선택 (매번 다른 추천)
+  pool.sort((a,b)=>(b['_score']||0)-(a['_score']||0));
+  const top=pool.slice(0,15);
+  for(let i=top.length-1;i>0;i--){{const j=Math.floor(Math.random()*(i+1));[top[i],top[j]]=[top[j],top[i]];}}
+  const matched=top.slice(0,3);
   const box=document.getElementById('quizBox');
   box.innerHTML=`<div class="quiz-result">
     <div class="quiz-result-tag" style="background:${{CAT_COLORS[cat]}}">${{CAT_LABELS[cat]}}</div>
