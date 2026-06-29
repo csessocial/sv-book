@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SV Book — 2026.06.29 14:50</title>
+<title>SV Book — 2026.06.29 15:07</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -211,6 +211,14 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-
 .mbtn-secondary{background:white;color:var(--ink2)}
 .mbtn-secondary:hover{background:var(--bg2)}
 
+/* ── 원장님 Pick ── */
+.pick-item{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--border)}
+.pick-item:last-child{border-bottom:none}
+.pick-num{width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#4361ee,#7c3aed);color:white;font-size:.65rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.pick-info{flex:1;min-width:0}
+.pick-title{font-size:.84rem;font-weight:700;color:var(--ink);margin-bottom:3px}
+.pick-meta{font-size:.7rem;color:var(--ink4);font-weight:300}
+
 /* ── 사이트 가이드 ── */
 .guide-section{background:linear-gradient(180deg,var(--bg) 0%,#eef0fb 100%);padding:0;border-top:1px solid var(--border)}
 .guide-inner{max-width:1320px;margin:0 auto;padding:56px 40px 64px}
@@ -285,8 +293,9 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-
 <nav class="nav" id="mainNav">
   <div class="nav-inner">
     <div class="nav-logo">SV<span>.</span>Book</div>
-    <span class="nav-meta">2026.06.29 14:50 기준 · 353권</span>
+    <span class="nav-meta">2026.06.29 15:07 기준 · 353권</span>
     <div class="nav-actions">
+      <button class="nav-btn primary" onclick="openPickModal()">⭐ 원장님 Pick!</button>
       <button class="nav-btn" onclick="document.getElementById('guideSection').scrollIntoView({behavior:'smooth'})">📖 가이드</button>
       <button class="nav-btn" onclick="openRefreshModal()">🔄 재수집</button>
       <button class="nav-btn" onclick="downloadCSV()">CSV</button>
@@ -468,6 +477,18 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-
       <button class="mbtn mbtn-secondary" onclick="closeModal()">닫기</button>
       <button class="mbtn mbtn-primary" id="runBtn" onclick="triggerWorkflow()">지금 실행</button>
     </div>
+  </div>
+</div>
+
+<!-- 원장님 Pick 모달 -->
+<div class="modal-bg" id="pickModal" onclick="if(event.target===this)closePickModal()">
+  <div class="modal" style="max-width:560px;max-height:80vh;display:flex;flex-direction:column">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <h2 style="margin:0">⭐ 원장님 Pick!</h2>
+      <button onclick="closePickModal()" style="background:none;border:none;font-size:1.1rem;color:var(--ink4);cursor:pointer">✕</button>
+    </div>
+    <p style="margin-bottom:16px">CSES 원장님이 직접 선정한 도서 목록입니다.</p>
+    <div style="flex:1;overflow-y:auto" id="pickList"></div>
   </div>
 </div>
 
@@ -742,6 +763,43 @@ function downloadCSV(){
 }
 
 // 모달
+// 원장님 Pick
+const DIRECTOR_PICKS = [
+  {title:'최후의 인구론',author:'폴 몰런드',pub:'미래의창',date:'2025.01.20'},
+  {title:'기부의 과학적 관리',author:'육근효',pub:'한국학술정보',date:'2025.01.24'},
+  {title:'인센티브 이코노미',author:'유리 그니지',pub:'김영사',date:'2024.09.26'},
+  {title:'기업가정신',author:'나석권 외 7',pub:'현암사',date:'2025.04.19'},
+  {title:'적응하라 기후위기는 멈추지 않는다',author:'로버트 핀다이크',pub:'시크릿하우스',date:'2025.06.25'},
+  {title:'무엇이 대전환을 만들었는가',author:'바츨라프 스밀',pub:'처음북스',date:'2025.08.01'},
+  {title:'빅벳',author:'라지브 샤',pub:'초록우산',date:'2025.05.05'},
+  {title:'불확실성에 맞서는 기술',author:'데이비드 스피겔할터',pub:'생각의힘',date:'2025.05.30'},
+  {title:'트렌드코리아 2026',author:'김난도 외 11',pub:'미래의창',date:'2025.09.25'},
+  {title:'질서없음',author:'헬렌 톰슨',pub:'월북',date:'2025.10.20'},
+  {title:'직관과 객관',author:'키코 아네라스',pub:'오픈도어북스',date:'2026.01.14'},
+  {title:'통합성장이론',author:'오데드 갤로어',pub:'RHK',date:'2025.11.17'},
+  {title:'휴먼코드',author:'성소라',pub:'더스퀘어',date:'2025.12.03'},
+  {title:'필연적 혼자의 시대',author:'김수영',pub:'다산북스',date:'2025.04.22'},
+  {title:'낯선 사람과 부근을 만들기',author:'상바오',pub:'글항아리',date:'2026.02.02'},
+  {title:'주의! 거짓이 포함되어 있을 수 있음',author:'앨릭스 에드먼스',pub:'위즈덤하우스',date:'2026.01.28'},
+  {title:'사회연대경제',author:'로베르 부아예',pub:'경인문화사',date:'2025.05.30'},
+  {title:'슈퍼 모멘텀 Super Momentum',author:'이인숙 외 5',pub:'플랫폼9와3/4',date:'2026.01.26'},
+];
+function openPickModal(){
+  const el=document.getElementById('pickList');
+  el.innerHTML=DIRECTOR_PICKS.map((b,i)=>`
+    <div class="pick-item">
+      <div class="pick-num">${i+1}</div>
+      <div class="pick-info">
+        <div class="pick-title">${b.title}</div>
+        <div class="pick-meta">${b.author} · ${b.pub} · ${b.date}</div>
+      </div>
+    </div>`).join('');
+  document.getElementById('pickModal').classList.add('show');
+}
+function closePickModal(){
+  document.getElementById('pickModal').classList.remove('show');
+}
+
 function openRefreshModal(){
   document.getElementById('refreshModal').classList.add('show');
   const saved=localStorage.getItem('sv_gh_token');
