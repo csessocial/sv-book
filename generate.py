@@ -265,18 +265,45 @@ body{{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font
 .mbtn-secondary{{background:white;color:var(--ink2)}}
 .mbtn-secondary:hover{{background:var(--bg2)}}
 
-/* ── 원장님 Pick ── */
-.pick-item{{display:flex;gap:12px;align-items:flex-start;padding:14px 0;border-bottom:1px solid var(--border)}}
-.pick-item:last-child{{border-bottom:none}}
-.pick-num{{width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#4361ee,#7c3aed);color:white;font-size:.65rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}}
-.pick-img{{width:50px;height:72px;border-radius:6px;object-fit:cover;flex-shrink:0}}
-.pick-info{{flex:1;min-width:0}}
-.pick-title{{font-size:.84rem;font-weight:700;color:var(--ink);margin-bottom:3px}}
-.pick-meta{{font-size:.68rem;color:var(--ink4);font-weight:300;margin-bottom:4px}}
-.pick-bio{{font-size:.66rem;color:var(--purple);font-weight:500;margin-bottom:4px}}
-.pick-desc{{font-size:.68rem;color:var(--ink3);line-height:1.6;font-weight:300;margin-bottom:6px}}
-.pick-link{{font-size:.66rem;font-weight:700;color:var(--accent);text-decoration:none}}
-.pick-link:hover{{text-decoration:underline}}
+/* ── 원장님 Pick 모달 ── */
+.pick-modal{{background:white;border-radius:20px;max-width:600px;width:92%;max-height:88vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,.2);animation:modalIn .25s ease both;position:relative}}
+.pick-modal-close{{position:absolute;top:14px;right:14px;z-index:10;background:rgba(0,0,0,.3);color:white;border:none;width:32px;height:32px;border-radius:50%;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s}}
+.pick-modal-close:hover{{background:rgba(0,0,0,.5)}}
+.pick-banner{{height:180px;background:linear-gradient(135deg,#fef3c7 0%,#a7f3d0 50%,#bfdbfe 100%);display:flex;align-items:flex-end;position:relative;border-radius:20px 20px 0 0;overflow:hidden}}
+.pick-banner-img{{position:absolute;inset:0;object-fit:cover;width:100%;height:100%}}
+.pick-banner-ov{{padding:20px 28px;width:100%;background:linear-gradient(to top,rgba(0,0,0,.5),transparent)}}
+.pick-banner-t{{font-size:1.3rem;font-weight:800;color:white;text-shadow:0 2px 8px rgba(0,0,0,.3)}}
+.pick-banner-s{{font-size:.78rem;color:rgba(255,255,255,.85);font-weight:300;margin-top:4px}}
+/* 캐러셀 1권씩 */
+.pick-carousel{{display:flex;align-items:center;gap:12px;padding:20px 20px 8px}}
+.pick-ca-arr{{width:36px;height:36px;border-radius:50%;border:1.5px solid var(--border);background:white;color:var(--ink3);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}}
+.pick-ca-arr:hover{{border-color:var(--accent);color:var(--accent);background:var(--accent-light)}}
+.pick-ca-card{{flex:1;display:flex;gap:16px;align-items:flex-start;padding:16px;border-radius:14px;background:var(--bg2);border:1px solid var(--border);min-height:140px}}
+.pick-ca-img{{width:80px;height:115px;border-radius:8px;object-fit:cover;flex-shrink:0;box-shadow:0 4px 12px rgba(0,0,0,.1)}}
+.pick-ca-info{{flex:1;min-width:0}}
+.pick-ca-title{{font-size:.92rem;font-weight:800;color:var(--ink);margin-bottom:4px}}
+.pick-ca-meta{{font-size:.7rem;color:var(--ink4);margin-bottom:6px;font-weight:300}}
+.pick-ca-bio{{font-size:.68rem;color:var(--purple);font-weight:500;margin-bottom:6px}}
+.pick-ca-desc{{font-size:.72rem;color:var(--ink3);line-height:1.6;font-weight:300;margin-bottom:8px}}
+.pick-ca-link{{font-size:.68rem;font-weight:700;color:var(--accent);text-decoration:none}}
+.pick-ca-link:hover{{text-decoration:underline}}
+.pick-ca-dots{{display:flex;gap:5px;justify-content:center;padding:8px 0 16px}}
+.pick-ca-dot{{width:6px;height:6px;border-radius:50%;background:var(--border);cursor:pointer;transition:all .2s}}
+.pick-ca-dot.active{{background:var(--accent);width:16px;border-radius:3px}}
+/* 전체 리스트 */
+.pick-list-hdr{{font-size:.78rem;font-weight:700;color:var(--ink3);padding:0 24px 8px;border-top:1px solid var(--border);margin-top:4px;padding-top:16px}}
+.pick-item{{display:flex;gap:10px;align-items:center;padding:10px 24px;border-bottom:1px solid var(--bg2);transition:background .12s}}
+.pick-item:hover{{background:var(--bg2)}}
+.pick-num{{width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,#4361ee,#7c3aed);color:white;font-size:.6rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}}
+.pick-sm-img{{width:32px;height:46px;border-radius:4px;object-fit:cover;flex-shrink:0}}
+.pick-sm-info{{flex:1;min-width:0}}
+.pick-sm-title{{font-size:.78rem;font-weight:700;color:var(--ink)}}
+.pick-sm-meta{{font-size:.64rem;color:var(--ink4);font-weight:300}}
+.pick-sm-link{{font-size:.62rem;font-weight:700;color:var(--accent);text-decoration:none;flex-shrink:0}}
+.pick-list-pg{{display:flex;gap:5px;justify-content:center;padding:14px 0 20px}}
+.pick-pg-btn{{min-width:28px;height:28px;padding:0 8px;border-radius:6px;border:1px solid var(--border);background:white;font-size:.75rem;font-family:var(--sans);color:var(--ink3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}}
+.pick-pg-btn:hover{{border-color:var(--accent);color:var(--accent)}}
+.pick-pg-btn.active{{background:var(--accent);color:white;border-color:var(--accent)}}
 
 /* ── 사이트 가이드 ── */
 .guide-section{{background:linear-gradient(180deg,var(--bg) 0%,#eef0fb 100%);padding:0;border-top:1px solid var(--border)}}
@@ -540,13 +567,23 @@ body{{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font
 
 <!-- 원장님 Pick 모달 -->
 <div class="modal-bg" id="pickModal" onclick="if(event.target===this)closePickModal()">
-  <div class="modal" style="max-width:560px;max-height:80vh;display:flex;flex-direction:column">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
-      <h2 style="margin:0">⭐ 원장님 Pick!</h2>
-      <button onclick="closePickModal()" style="background:none;border:none;font-size:1.1rem;color:var(--ink4);cursor:pointer">✕</button>
+  <div class="pick-modal">
+    <button class="pick-modal-close" onclick="closePickModal()">✕</button>
+    <div class="pick-banner" id="pickBanner">
+      <div class="pick-banner-ov">
+        <h2 class="pick-banner-t">⭐ 원장님 Pick!</h2>
+        <p class="pick-banner-s">CSES 원장님께서 직접 선정한 도서 (2025-2026)</p>
+      </div>
     </div>
-    <p style="margin-bottom:16px">그동안 원장님이 선정하신 도서 목록입니다.(2025-2026)</p>
-    <div style="flex:1;overflow-y:auto" id="pickList"></div>
+    <div class="pick-carousel">
+      <button class="pick-ca-arr" onclick="pickCarPrev()">&#8592;</button>
+      <div class="pick-ca-card" id="pickCaCard"></div>
+      <button class="pick-ca-arr" onclick="pickCarNext()">&#8594;</button>
+    </div>
+    <div class="pick-ca-dots" id="pickCaDots"></div>
+    <div class="pick-list-hdr">전체 목록</div>
+    <div id="pickList"></div>
+    <div class="pick-list-pg" id="pickPg"></div>
   </div>
 </div>
 
@@ -842,21 +879,62 @@ const DIRECTOR_PICKS = [
   {{title:'사회연대경제',author:'로베르 부아예',pub:'경인문화사',date:'2025.05',bio:'프랑스 국립과학연구센터(CNRS) 연구교수, 조절이론 대가',desc:'인간 중심의 대안 경제질서로서 사회연대경제(SSE)의 가능성을 탐색',img:'https://shopping-phinf.pstatic.net/main_5557318/55573183670.20260331114002.jpg',link:'https://search.shopping.naver.com/book/catalog/55573183670'}},
   {{title:'슈퍼 모멘텀',author:'이인숙 외 5',pub:'플랫폼9와3/4',date:'2026.01',bio:'SK하이닉스 전·현직 임원 취재 기반',desc:'SK하이닉스의 언더독 스토리 — AI 메모리 기술 리더십의 비밀',img:'https://shopping-phinf.pstatic.net/main_5857039/58570391535.20260331122007.jpg',link:'https://search.shopping.naver.com/book/catalog/58570391535'}},
 ];
+let pickCaIdx=0, pickPgIdx=0;
+const PICK_PG_SIZE=5;
+
 function openPickModal(){{
-  const el=document.getElementById('pickList');
-  el.innerHTML=DIRECTOR_PICKS.map((b,i)=>`
-    <div class="pick-item">
-      <div class="pick-num">${{i+1}}</div>
-      ${{b.img?`<img class="pick-img" src="${{b.img}}" onerror="this.style.display='none'">`:''}}
-      <div class="pick-info">
-        <div class="pick-title">${{b.title}}</div>
-        <div class="pick-meta">${{b.author}} · ${{b.pub}} · ${{b.date}}</div>
-        <div class="pick-bio">✍️ ${{b.bio}}</div>
-        <div class="pick-desc">${{b.desc}}</div>
-        <a class="pick-link" href="${{b.link}}" target="_blank">구매하기 →</a>
-      </div>
-    </div>`).join('');
+  pickCaIdx=0; pickPgIdx=0;
+  renderPickCar();
+  renderPickList();
+  // 배너 이미지 (있으면 적용)
+  const bannerEl=document.getElementById('pickBanner');
+  const imgTest=new Image();
+  imgTest.onload=function(){{
+    const imgEl=document.createElement('img');
+    imgEl.src='director_banner.jpg';
+    imgEl.className='pick-banner-img';
+    bannerEl.insertBefore(imgEl,bannerEl.firstChild);
+  }};
+  imgTest.onerror=function(){{}};
+  imgTest.src='director_banner.jpg';
   document.getElementById('pickModal').classList.add('show');
+}}
+function renderPickCar(){{
+  const b=DIRECTOR_PICKS[pickCaIdx];
+  document.getElementById('pickCaCard').innerHTML=`
+    ${{b.img?`<img class="pick-ca-img" src="${{b.img}}" onerror="this.style.display='none'">`:''}}
+    <div class="pick-ca-info">
+      <div class="pick-ca-title">${{b.title}}</div>
+      <div class="pick-ca-meta">${{b.author}} · ${{b.pub}} · ${{b.date}}</div>
+      <div class="pick-ca-bio">✍️ ${{b.bio}}</div>
+      <div class="pick-ca-desc">${{b.desc}}</div>
+      <a class="pick-ca-link" href="${{b.link}}" target="_blank">구매하기 →</a>
+    </div>`;
+  document.getElementById('pickCaDots').innerHTML=DIRECTOR_PICKS.map((_,i)=>
+    `<div class="pick-ca-dot${{i===pickCaIdx?' active':''}}" onclick="pickCaGo(${{i}})"></div>`
+  ).join('');
+}}
+function pickCaGo(n){{pickCaIdx=(n+DIRECTOR_PICKS.length)%DIRECTOR_PICKS.length;renderPickCar();}}
+function pickCarNext(){{pickCaGo(pickCaIdx+1);}}
+function pickCarPrev(){{pickCaGo(pickCaIdx-1);}}
+
+function renderPickList(){{
+  const total=Math.ceil(DIRECTOR_PICKS.length/PICK_PG_SIZE);
+  const start=pickPgIdx*PICK_PG_SIZE;
+  const slice=DIRECTOR_PICKS.slice(start,start+PICK_PG_SIZE);
+  document.getElementById('pickList').innerHTML=slice.map((b,i)=>`
+    <div class="pick-item" onclick="pickCaGo(${{start+i}});document.querySelector('.pick-carousel').scrollIntoView({{behavior:'smooth'}})">
+      <div class="pick-num">${{start+i+1}}</div>
+      ${{b.img?`<img class="pick-sm-img" src="${{b.img}}" onerror="this.style.display='none'">`:''}}
+      <div class="pick-sm-info">
+        <div class="pick-sm-title">${{b.title}}</div>
+        <div class="pick-sm-meta">${{b.author}} · ${{b.pub}}</div>
+      </div>
+      <a class="pick-sm-link" href="${{b.link}}" target="_blank" onclick="event.stopPropagation()">구매 →</a>
+    </div>`).join('');
+  document.getElementById('pickPg').innerHTML=Array.from({{length:total}},(_,i)=>
+    `<button class="pick-pg-btn${{i===pickPgIdx?' active':''}}" onclick="pickPgIdx=${{i}};renderPickList()">${{i+1}}</button>`
+  ).join('');
 }}
 function closePickModal(){{
   document.getElementById('pickModal').classList.remove('show');
