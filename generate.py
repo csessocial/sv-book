@@ -104,9 +104,12 @@ body{{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font
 .hero-bg::before{{content:'';position:absolute;top:-40%;right:-10%;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(99,102,241,.35) 0%,transparent 65%);animation:pulse 6s ease-in-out infinite}}
 .hero-bg::after{{content:'';position:absolute;bottom:-30%;left:-5%;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(139,92,246,.25) 0%,transparent 65%);animation:pulse 8s ease-in-out infinite .5s}}
 @keyframes pulse{{0%,100%{{transform:scale(1);opacity:1}}50%{{transform:scale(1.08);opacity:.75}}}}
-.hero-orb{{position:absolute;border-radius:50%;filter:blur(60px);pointer-events:none}}
-.hero-orb-1{{width:300px;height:300px;top:10%;right:5%;background:rgba(67,97,238,.2);animation:float1 7s ease-in-out infinite}}
-.hero-orb-2{{width:200px;height:200px;bottom:10%;left:30%;background:rgba(124,58,237,.18);animation:float2 9s ease-in-out infinite}}
+.hero-orb{{position:absolute;border-radius:50%;pointer-events:none}}
+.hero-orb-1{{width:300px;height:300px;top:10%;right:5%;background:rgba(67,97,238,.2);filter:blur(60px);animation:float1 7s ease-in-out infinite}}
+.hero-orb-2{{width:120px;height:120px;top:16px;left:50%;transform:translateX(-50%);filter:none;pointer-events:auto;cursor:pointer;background:rgba(255,255,255,.07);backdrop-filter:blur(8px);border:1.5px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;transition:all .25s;z-index:5}}
+.hero-orb-2:hover{{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.35);transform:translateX(-50%) scale(1.06)}}
+.hero-orb-2 .orb-icon{{font-size:1.6rem}}
+.hero-orb-2 .orb-text{{font-size:.6rem;font-weight:700;color:rgba(255,255,255,.8);letter-spacing:.5px}}
 @keyframes float1{{0%,100%{{transform:translateY(0) translateX(0)}}50%{{transform:translateY(-20px) translateX(10px)}}}}
 @keyframes float2{{0%,100%{{transform:translateY(0)}}50%{{transform:translateY(15px)}}}}
 .hero-content{{position:relative;z-index:1;padding:72px 0 80px 0;display:flex;flex-direction:column;justify-content:center;animation:fadeUp .6s ease both}}
@@ -264,12 +267,17 @@ body{{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font
 .mbtn-secondary:hover{{background:var(--bg2)}}
 
 /* ── 원장님 Pick ── */
-.pick-item{{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--border)}}
+.pick-item{{display:flex;gap:12px;align-items:flex-start;padding:14px 0;border-bottom:1px solid var(--border)}}
 .pick-item:last-child{{border-bottom:none}}
 .pick-num{{width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#4361ee,#7c3aed);color:white;font-size:.65rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}}
+.pick-img{{width:50px;height:72px;border-radius:6px;object-fit:cover;flex-shrink:0}}
 .pick-info{{flex:1;min-width:0}}
 .pick-title{{font-size:.84rem;font-weight:700;color:var(--ink);margin-bottom:3px}}
-.pick-meta{{font-size:.7rem;color:var(--ink4);font-weight:300}}
+.pick-meta{{font-size:.68rem;color:var(--ink4);font-weight:300;margin-bottom:4px}}
+.pick-bio{{font-size:.66rem;color:var(--purple);font-weight:500;margin-bottom:4px}}
+.pick-desc{{font-size:.68rem;color:var(--ink3);line-height:1.6;font-weight:300;margin-bottom:6px}}
+.pick-link{{font-size:.66rem;font-weight:700;color:var(--accent);text-decoration:none}}
+.pick-link:hover{{text-decoration:underline}}
 
 /* ── 사이트 가이드 ── */
 .guide-section{{background:linear-gradient(180deg,var(--bg) 0%,#eef0fb 100%);padding:0;border-top:1px solid var(--border)}}
@@ -362,7 +370,7 @@ body{{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font
 <section class="hero" id="heroSection">
   <div class="hero-bg">
     <div class="hero-orb hero-orb-1"></div>
-    <div class="hero-orb hero-orb-2"></div>
+    <div class="hero-orb hero-orb-2" onclick="openPickModal()"><span class="orb-icon">⭐</span><span class="orb-text">원장님 Pick</span></div>
   </div>
   <div class="hero-grid">
   <div class="hero-content">
@@ -817,33 +825,37 @@ function downloadCSV(){{
 // 모달
 // 원장님 Pick
 const DIRECTOR_PICKS = [
-  {{title:'최후의 인구론',author:'폴 몰런드',pub:'미래의창',date:'2025.01.20'}},
-  {{title:'기부의 과학적 관리',author:'육근효',pub:'한국학술정보',date:'2025.01.24'}},
-  {{title:'인센티브 이코노미',author:'유리 그니지',pub:'김영사',date:'2024.09.26'}},
-  {{title:'기업가정신',author:'나석권 외 7',pub:'현암사',date:'2025.04.19'}},
-  {{title:'적응하라 기후위기는 멈추지 않는다',author:'로버트 핀다이크',pub:'시크릿하우스',date:'2025.06.25'}},
-  {{title:'무엇이 대전환을 만들었는가',author:'바츨라프 스밀',pub:'처음북스',date:'2025.08.01'}},
-  {{title:'빅벳',author:'라지브 샤',pub:'초록우산',date:'2025.05.05'}},
-  {{title:'불확실성에 맞서는 기술',author:'데이비드 스피겔할터',pub:'생각의힘',date:'2025.05.30'}},
-  {{title:'트렌드코리아 2026',author:'김난도 외 11',pub:'미래의창',date:'2025.09.25'}},
-  {{title:'질서없음',author:'헬렌 톰슨',pub:'월북',date:'2025.10.20'}},
-  {{title:'직관과 객관',author:'키코 아네라스',pub:'오픈도어북스',date:'2026.01.14'}},
-  {{title:'통합성장이론',author:'오데드 갤로어',pub:'RHK',date:'2025.11.17'}},
-  {{title:'휴먼코드',author:'성소라',pub:'더스퀘어',date:'2025.12.03'}},
-  {{title:'필연적 혼자의 시대',author:'김수영',pub:'다산북스',date:'2025.04.22'}},
-  {{title:'낯선 사람과 부근을 만들기',author:'상바오',pub:'글항아리',date:'2026.02.02'}},
-  {{title:'주의! 거짓이 포함되어 있을 수 있음',author:'앨릭스 에드먼스',pub:'위즈덤하우스',date:'2026.01.28'}},
-  {{title:'사회연대경제',author:'로베르 부아예',pub:'경인문화사',date:'2025.05.30'}},
-  {{title:'슈퍼 모멘텀 Super Momentum',author:'이인숙 외 5',pub:'플랫폼9와3/4',date:'2026.01.26'}},
+  {{title:'최후의 인구론',author:'폴 몰런드',pub:'미래의창',date:'2025.01',bio:'영국 런던대 버크벡 칼리지 연구원, 인구통계학자',desc:'인구 감소가 가져올 인류의 미래를 전망하는 마지막 경고',img:'https://shopping-phinf.pstatic.net/main_5232754/52327541626.20260331100527.jpg',link:'https://search.shopping.naver.com/book/catalog/52327541626'}},
+  {{title:'기부의 과학적 관리',author:'육근효',pub:'한국학술정보',date:'2025.01',bio:'경영학 박사, 기부·사회적 가치 경영 연구자',desc:'기부를 조직적·과학적으로 관리하는 실천적 프레임워크',img:'https://shopping-phinf.pstatic.net/main_5250622/52506223029.20260331102913.jpg',link:'https://search.shopping.naver.com/book/catalog/52506223029'}},
+  {{title:'인센티브 이코노미',author:'유리 그니지',pub:'김영사',date:'2024.09',bio:'UC 샌디에이고 경제학 교수, 행동경제학 세계적 권위자',desc:'사람을 행동하게 하는 시그널 — 인센티브가 세상을 돌아가게 한다',img:'https://shopping-phinf.pstatic.net/main_5029985/50299858625.20260331121939.jpg',link:'https://search.shopping.naver.com/book/catalog/50299858625'}},
+  {{title:'기업가정신',author:'나석권 외 7',pub:'현암사',date:'2025.04',bio:'기업가정신 연구자 7인 공저',desc:'경제 성장과 일자리 창출의 핵심, 기업가정신의 본질을 탐구',img:'https://shopping-phinf.pstatic.net/main_5425142/54251423391.20260331120842.jpg',link:'https://search.shopping.naver.com/book/catalog/54251423391'}},
+  {{title:'적응하라 기후위기는 멈추지 않는다',author:'로버트 핀다이크',pub:'시크릿하우스',date:'2025.06',bio:'MIT 슬론경영대학원 석좌교수, 환경경제학 권위자',desc:'기후 대응을 넘어 적응의 시대로 — 경제학으로 본 생존 전략',img:'https://shopping-phinf.pstatic.net/main_5534095/55340956229.20260331122048.jpg',link:'https://search.shopping.naver.com/book/catalog/55340956229'}},
+  {{title:'무엇이 대전환을 만들었는가',author:'바츨라프 스밀',pub:'처음북스',date:'2025.08',bio:'캐나다 매니토바대 석좌교수, 빌 게이츠 추천 저자',desc:'인구·식량·에너지·경제·환경으로 본 세계의 작동 원리',img:'https://shopping-phinf.pstatic.net/main_5586133/55861339745.20260331103152.jpg',link:'https://search.shopping.naver.com/book/catalog/55861339745'}},
+  {{title:'빅벳',author:'라지브 샤',pub:'초록우산',date:'2025.05',bio:'록펠러재단 전 대표, USAID 전 청장',desc:'인류적 과제에 대담하게 베팅하는 빅벳 전략의 실체',img:'',link:'https://search.kyobobook.co.kr/search?keyword=%EB%B9%85%EB%B2%B3'}},
+  {{title:'불확실성에 맞서는 기술',author:'데이비드 스피겔할터',pub:'생각의힘',date:'2025.05',bio:'케임브리지대 통계학 교수, 영국 왕립통계학회 전 회장',desc:'실업률·주식·전쟁·기후위기·AI — 예측의 대가가 가르치는 미래 생존 전략',img:'https://shopping-phinf.pstatic.net/main_5487363/54873634406.20260331104823.jpg',link:'https://search.shopping.naver.com/book/catalog/54873634406'}},
+  {{title:'트렌드코리아 2026',author:'김난도 외 11',pub:'미래의창',date:'2025.09',bio:'서울대 소비자학과 교수, 소비트렌드분석센터장',desc:'AI 대전환의 시대, 2026 대한민국 소비트렌드 전망',img:'https://shopping-phinf.pstatic.net/main_5658975/56589756898.20260331121048.jpg',link:'https://search.shopping.naver.com/book/catalog/56589756898'}},
+  {{title:'질서없음',author:'헬렌 톰슨',pub:'월북',date:'2025.10',bio:'케임브리지대 정치경제학 교수',desc:'격동의 세계를 이해하는 세 가지 프레임 — 에너지·지정학·금융',img:'https://shopping-phinf.pstatic.net/main_5692681/56926813115.20260331110635.jpg',link:'https://search.shopping.naver.com/book/catalog/56926813115'}},
+  {{title:'직관과 객관',author:'키코 아네라스',pub:'오픈도어북스',date:'2026.01',bio:'데이터 사이언티스트, 의사결정 연구자',desc:'데이터와 직관 사이에서 더 나은 판단을 내리는 방법',img:'',link:'https://search.kyobobook.co.kr/search?keyword=%EC%A7%81%EA%B4%80%EA%B3%BC+%EA%B0%9D%EA%B4%80'}},
+  {{title:'통합 성장 이론',author:'오데드 갤로어',pub:'RHK',date:'2025.11',bio:'브라운대 경제학과 교수, 통합성장이론 창시자',desc:'인류가 산업혁명 이후 폭발적 성장 단계로 전환한 이유를 규명',img:'',link:'https://search.kyobobook.co.kr/search?keyword=%ED%86%B5%ED%95%A9%EC%84%B1%EC%9E%A5%EC%9D%B4%EB%A1%A0'}},
+  {{title:'휴먼 코드',author:'성소라',pub:'더스퀘어',date:'2025.12',bio:'AI·디지털 전환 전략가, 글로벌 기업 자문',desc:'AI가 질주하는 시대, 인간만의 차별적 무기를 재설계하라',img:'https://shopping-phinf.pstatic.net/main_5781108/57811080449.20260331102917.jpg',link:'https://search.shopping.naver.com/book/catalog/57811080449'}},
+  {{title:'필연적 혼자의 시대',author:'김수영',pub:'다산북스',date:'2025.04',bio:'서울대 사회복지학과 교수, 1인가구 연구자',desc:'1000만 1인가구 시대 — 한국이 가족 대신 혼자를 선택한 이유',img:'https://shopping-phinf.pstatic.net/main_5861307/58613071998.20260331095059.jpg',link:'https://search.shopping.naver.com/book/catalog/58613071998'}},
+  {{title:'낯선 사람과 부근을 만들기',author:'상바오',pub:'글항아리',date:'2026.02',bio:'사회학 연구자, 관계와 공동체 탐구',desc:'관계 끊기 시대, 친밀한 낯선 사람들 속에서 부근을 만들어내는 시도',img:'https://shopping-phinf.pstatic.net/main_5858327/58583270623.20260331095228.jpg',link:'https://search.shopping.naver.com/book/catalog/58583270623'}},
+  {{title:'주의! 거짓이 포함되어 있을 수 있음',author:'앨릭스 에드먼스',pub:'위즈덤하우스',date:'2026.01',bio:'런던경영대학원 재무학 교수',desc:'가짜 정보와 허위 선동에 넘어가지 않는 팩트 체크의 기술',img:'https://shopping-phinf.pstatic.net/main_5868313/58683132378.20260331100947.jpg',link:'https://search.shopping.naver.com/book/catalog/58683132378'}},
+  {{title:'사회연대경제',author:'로베르 부아예',pub:'경인문화사',date:'2025.05',bio:'프랑스 국립과학연구센터(CNRS) 연구교수, 조절이론 대가',desc:'인간 중심의 대안 경제질서로서 사회연대경제(SSE)의 가능성을 탐색',img:'https://shopping-phinf.pstatic.net/main_5557318/55573183670.20260331114002.jpg',link:'https://search.shopping.naver.com/book/catalog/55573183670'}},
+  {{title:'슈퍼 모멘텀',author:'이인숙 외 5',pub:'플랫폼9와3/4',date:'2026.01',bio:'SK하이닉스 전·현직 임원 취재 기반',desc:'SK하이닉스의 언더독 스토리 — AI 메모리 기술 리더십의 비밀',img:'https://shopping-phinf.pstatic.net/main_5857039/58570391535.20260331122007.jpg',link:'https://search.shopping.naver.com/book/catalog/58570391535'}},
 ];
 function openPickModal(){{
   const el=document.getElementById('pickList');
   el.innerHTML=DIRECTOR_PICKS.map((b,i)=>`
     <div class="pick-item">
       <div class="pick-num">${{i+1}}</div>
+      ${{b.img?`<img class="pick-img" src="${{b.img}}" onerror="this.style.display='none'">`:''}}
       <div class="pick-info">
         <div class="pick-title">${{b.title}}</div>
         <div class="pick-meta">${{b.author}} · ${{b.pub}} · ${{b.date}}</div>
+        <div class="pick-bio">✍️ ${{b.bio}}</div>
+        <div class="pick-desc">${{b.desc}}</div>
+        <a class="pick-link" href="${{b.link}}" target="_blank">구매하기 →</a>
       </div>
     </div>`).join('');
   document.getElementById('pickModal').classList.add('show');
