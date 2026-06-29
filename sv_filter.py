@@ -337,15 +337,30 @@ def score_book(book: dict) -> int:
     elif themes_hit >= 2:
         pts += 1
 
-    # ── 3) 저자 전문성 (0~1점) ──
+    # ── 3) 저자 전문성 (0~2점) ──
     author_info = (book.get("비고 (저자 설명)", "") or "") + " " + (book.get("저자", "") or "")
+    content_full = content + " " + (book.get("책 내용", "") or "")
+    # 2점: 석학·해외 교수·유명 학자
+    SCHOLAR_KEYWORDS = [
+        "석좌교수", "석좌 교수", "distinguished professor",
+        "MIT", "하버드", "스탠퍼드", "옥스퍼드", "케임브리지", "프린스턴",
+        "예일", "컬럼비아", "버클리", "브라운대", "런던대", "LSE",
+        "Harvard", "Stanford", "Oxford", "Cambridge", "Princeton",
+        "Yale", "Columbia", "Berkeley", "Brown", "MIT", "LSE",
+        "노벨", "Nobel", "세계적", "세계 최고",
+        "빌 게이츠 추천", "빌게이츠 추천", "유발 하라리",
+        "다보스", "TED", "세계경제포럼", "WEF",
+    ]
     EXPERT_KEYWORDS = [
-        "교수", "석좌교수", "박사", "연구원", "연구소", "소장", "원장",
+        "교수", "박사", "연구원", "연구소", "소장", "원장",
         "CEO", "대표", "전문가", "저널리스트", "작가", "기자",
         "이사", "위원", "센터장", "학회",
         "professor", "PhD", "researcher", "director",
     ]
-    if any(kw in author_info for kw in EXPERT_KEYWORDS):
+    author_and_desc = author_info + " " + content_full
+    if any(kw in author_and_desc for kw in SCHOLAR_KEYWORDS):
+        pts += 2
+    elif any(kw in author_info for kw in EXPERT_KEYWORDS):
         pts += 1
 
     # ── 4) 전망·논쟁서 보너스 (0~1점) ──
@@ -383,8 +398,10 @@ def score_book(book: dict) -> int:
         r"(입문|개론|원론|총론|통론|교과서|학개론|학원론)$",
         r"(큰글자책|큰글씨|대활자)",
         r"(제\d+판|개정판|증보판|\d+판$)",
-        r"(유망\s*핵심\s*기술|시장\s*전망과\s*사업화|사업\s*분석|시장동향)",
+        r"(유망\s*핵심\s*기술|시장\s*전망과\s*사업화|사업\s*분석|시장동향|사업전망)",
         r"(중견기업용|산업\s*분석|실무\s*가이드|실무서|매뉴얼)",
+        r"(즉각퇴진|탄핵|촛불|집회|시위).*(기록|백서|자료집)",
+        r"(고령친화산업|시장동향과\s*사업전망)",
         r"SDG.*ESG.*보고서",
         r"(경영보고서|지속가능.*보고서|보고서.*모든 것)",
         r"(건축기준|설계기준|시공기준|기술기준)",
