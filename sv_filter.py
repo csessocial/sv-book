@@ -337,6 +337,11 @@ DEMOTED_TITLES = [
     "대학의 미래는 싱가포르에 있다",
     "사회과교육의 이해",
     "기업지배구조와 ESG",
+    "고령친화산업",
+    "Introduction to renewable energy",
+    "Introduction to Renewable Energy",
+    "Energy cities",
+    "Energy Cities",
 ]
 
 def score_book(book: dict) -> int:
