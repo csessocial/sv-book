@@ -41,10 +41,92 @@ def collect(sources: list[str]) -> list[dict]:
     return all_books
 
 
+def select_featured(books: list[dict], n: int = 5) -> list[dict]:
+    """관련도 5점 도서 중 원장님 선호 패턴으로 이달의 추천 자동 선정.
+    우선순위: 해외 석학 저자 → CURATED 목록 수록 → 최신 출판일
+    카테고리 다양성: 동일 토픽 최대 2권
+    """
+    # 해외 석학 저자 목록 (sv_filter.score_book 내부와 동일하게 유지)
+    KNOWN_SCHOLARS = [
+        "폴 몰런드", "바츨라프 스밀", "데이비드 스피겔할터", "헬렌 톰슨",
+        "오데드 갤로어", "로버트 핀다이크", "유리 그니지", "라지브 샤",
+        "앨릭스 에드먼스", "팀 하포드", "제이슨 솅커", "로베르 부아예",
+        "무스타파 술레이만", "그레이엄 리", "키코 아네라스", "로버트 퍼트넘",
+        "이브 헤롤", "데브라 헨드릭", "로버트 캐플런", "아서 스넬",
+        "제리 카플란", "한나 리치", "샘 프리드먼", "요르겐 랜더스",
+        "올리버 프랭클린", "니크라스 뢴벡", "제이슨 히켈", "린다 유",
+        "Hannah Ritchie", "Sherry Madera", "Netta Jenkins", "Rajiv Shah",
+        "Mirjam Gruber", "Jason Schenker", "Tim Harford",
+    ]
+    try:
+        from sv_filter import CURATED_TITLES
+    except ImportError:
+        CURATED_TITLES = []
+
+    candidates = [b for b in books
+                  if b.get('_score') == 5 and b.get('이미지', '').startswith('http')]
+
+    def _pub_dt(b):
+        pub = b.get('출판일', '')
+        try:
+            parts = [int(x) for x in pub.split('.')]
+            return datetime(parts[0], parts[1], parts[2] if len(parts) > 2 else 1)
+        except Exception:
+            return datetime(2020, 1, 1)
+
+    def _rank(b):
+        author = b.get('저자', '')
+        title  = b.get('도서명', '')
+        is_scholar = int(any(s in author for s in KNOWN_SCHOLARS))
+        is_curated = int(any(ct in title  for ct in CURATED_TITLES))
+        return (is_scholar, is_curated, _pub_dt(b))
+
+    candidates.sort(key=_rank, reverse=True)
+
+    TOPIC_MAP = [
+        (['AI', '인공지능', '디지털', '로봇', '알고리즘'], 'AI'),
+        (['기후', '탄소', '환경', '에너지', '생태'],       '기후'),
+        (['인구', '저출생', '고령', '이주', '인구론'],     '인구'),
+        (['지정학', '패권', '국제', '전략', '글로벌'],     '지정학'),
+        (['사회', '공동체', '연대', '불평등'],              '사회'),
+    ]
+
+    selected, used_topics = [], []
+    for b in candidates:
+        if len(selected) >= n:
+            break
+        txt = b.get('도서명', '') + ' ' + b.get('책 내용', '')
+        topic = next((lbl for keys, lbl in TOPIC_MAP if any(k in txt for k in keys)), 'OTHER')
+        if used_topics.count(topic) < 2:
+            selected.append(b)
+            used_topics.append(topic)
+
+    # 다양성 조건으로 못 채웠으면 순서대로 보충
+    for b in candidates:
+        if len(selected) >= n:
+            break
+        if b not in selected:
+            selected.append(b)
+
+    return selected[:n]
+
+
 def generate_html(books: list[dict], output_path: str, total_raw: int = 0):
     now = datetime.now().strftime("%Y.%m.%d %H:%M")
     data_json = json.dumps(books, ensure_ascii=False)
     filename_date = datetime.now().strftime("%Y%m%d")
+
+    # 이달의 추천 자동 선정 (_score 5점 중 원장님 선호 패턴)
+    featured_raw = select_featured(books, n=5)
+    featured_json = json.dumps([{
+        'rank':   f'이달의 추천 {i+1}위',
+        'title':  b.get('도서명', ''),
+        'author': f"{b.get('저자','')} · {b.get('출판사','')} · {b.get('출판일','')}",
+        'bio':    '',
+        'desc':   b.get('책 내용', '')[:200],
+        'image':  b.get('이미지', ''),
+        'link':   b.get('링크', ''),
+    } for i, b in enumerate(featured_raw)], ensure_ascii=False)
     kw_list = json.dumps(
         list(dict.fromkeys(__import__('config').KEYWORDS_KO + __import__('config').KEYWORDS_EN)),
         ensure_ascii=False
@@ -605,54 +687,8 @@ const CAT_COLOR = {{'Tech & Future':'#a78bfa','ESG & Sustainability':'#6ee7b7','
   }});
 }})();
 
-// ── 이달의 추천 도서 캐러셀 (26년 6월 SV Book 편집 선정) ──
-const FEATURED = [
-  {{
-    rank:'이달의 추천 1위',
-    title:'이토록 인간적인 능력',
-    author:'그레이엄 리 · 길벗 · 2026.02',
-    bio:'디지털 기술 교육 전문가. 리디언스톤(Lydian Stone) 창립자 겸 CEO. AI 시대에 지켜야 할 인간다움과 핵심 능력을 연구.',
-    desc:'"쓰지 않는 능력은 잃는다" — AI 시대, 우리를 인간답게 만드는 12가지 핵심 능력을 조명하며 인간다움의 본질을 되묻는다.',
-    image:'https://shopping-phinf.pstatic.net/main_5886504/58865048657.20260331112437.jpg',
-    link:'https://search.shopping.naver.com/book/catalog/58865048657',
-  }},
-  {{
-    rank:'이달의 추천 2위',
-    title:'경계 없음',
-    author:'이중학 · 클라우드나인 · 2026.03',
-    bio:'AI 에이전트 시대의 신인류론을 제시하는 연구자. 수직·수평 모든 경계가 사라지는 시대의 새로운 성장 전략을 탐구.',
-    desc:'수직·수평 경계가 사라지고 AI 에이전트를 거느린 신인류가 온다. 기존 일자리 구조를 넘어 스스로 길을 만드는 시대의 생존 전략.',
-    image:'https://shopping-phinf.pstatic.net/main_5941656/59416563400.20260331094626.jpg',
-    link:'https://search.shopping.naver.com/book/catalog/59416563400',
-  }},
-  {{
-    rank:'이달의 추천 3위',
-    title:'호모 카르보(Homo Carbo)',
-    author:'신익수 · 틈새책방 · 2026.03',
-    bio:'탄소 문명과 기후위기의 교차점을 연구하는 과학 인문 저술가. 이산화탄소가 새로운 질병원이 되는 현실을 경고.',
-    desc:'탄소를 먹고 자란 문명의 미래 — 이산화탄소가 기후 위기뿐 아니라 인류의 새로운 질병원이 되고 있다는 충격적 보고서.',
-    image:'https://shopping-phinf.pstatic.net/main_5927712/59277129968.20260331114642.jpg',
-    link:'https://search.shopping.naver.com/book/catalog/59277129968',
-  }},
-  {{
-    rank:'이달의 추천 4위',
-    title:'AI 이후의 미래 어떻게 될 것인가',
-    author:'제이슨 솅커 · 더페이지 · 2026.05',
-    bio:'세계적 미래학자. 금융·기술·일자리 전반에 걸친 AI의 파급력을 분석하며 부와 권력의 재편을 전망.',
-    desc:'"AI는 도구가 아니라 새로운 지배 운영체제다" — 세계 산업을 뒤흔드는 AI가 부와 권력을 어디로 향하게 하는지 날카롭게 전망.',
-    image:'https://shopping-phinf.pstatic.net/main_5976274/59762742786.20260428082502.jpg',
-    link:'https://search.shopping.naver.com/book/catalog/59762742786',
-  }},
-  {{
-    rank:'이달의 추천 5위',
-    title:'인간을 인간답게 만드는 불완전함에 대하여',
-    author:'팀 하포드 · 윌마 · 2026.05',
-    bio:'세계적 이코노미스트이자 《경제학 콘서트》 저자. 알고리즘 시대, 인간의 유연함과 창의성이 사회 변혁의 핵심임을 역설.',
-    desc:'알고리즘이 모든 마찰을 제거하는 완벽한 질서의 시대 — 그런데 왜 세상은 더 나아지지 않을까? 불완전함이 인간의 진짜 힘이다.',
-    image:'https://shopping-phinf.pstatic.net/main_5978923/59789235607.20260425072246.jpg',
-    link:'https://search.shopping.naver.com/book/catalog/59789235607',
-  }},
-];
+// ── 이달의 추천 도서 캐러셀 (관련도 5점 중 자동 선정) ──
+const FEATURED = {featured_json};
 
 let curSlide=0;
 (function initCarousel(){{
