@@ -399,8 +399,8 @@ body{{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font
   <div class="hero-grid">
   <div class="hero-content">
     <div class="hero-eyebrow">CSES SV Book</div>
-    <h1 class="hero-title">매주 사회적가치를<br>담은 책을 선별합니다</h1>
-    <p class="hero-desc">사회적가치, ESG, 기후·환경, 지정학 등<br>우리 연구와 연결된 신간을 매주 자동 수집·분류합니다.</p>
+    <h1 class="hero-title">사회적가치를<br>담은 책을 선별합니다</h1>
+    <p class="hero-desc">사회적가치, ESG, 기후·환경, 지정학 등<br>우리 연구와 연결된 신간을 자동 수집·분류합니다.</p>
     <div class="hero-cats">
       <button class="hero-cat active" data-cat="" onclick="heroSetCat(this)">전체</button>
       <button class="hero-cat" data-cat="Tech & Future" onclick="heroSetCat(this)">🤖 Tech &amp; Future</button>
