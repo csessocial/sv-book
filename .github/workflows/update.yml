@@ -5,6 +5,10 @@ on:
     - cron: '0 1 * * 1'  # 매주 월요일 오전 10시 (KST = UTC+1 = 01:00 UTC)
   workflow_dispatch:      # 수동 실행 버튼
 
+# github-actions[bot]이 index.html / sv_books_data.json 을 push 하려면 쓰기 권한 필요
+permissions:
+  contents: write
+
 jobs:
   collect-and-deploy:
     runs-on: ubuntu-latest
