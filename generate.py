@@ -32,7 +32,12 @@ def collect(sources: list[str]) -> list[dict]:
             from naver_scraper import fetch_all_books
         else:
             from nanet_scraper import fetch_all_books
-        for b in fetch_all_books():
+        try:
+            fetched = fetch_all_books()
+        except Exception as e:
+            print(f"  [경고] {SRC_LABELS[src]} 수집 실패, 건너뜀: {e}")
+            fetched = []
+        for b in fetched:
             key = _norm_title(b["도서명"])
             if key not in seen:
                 seen.add(key)
