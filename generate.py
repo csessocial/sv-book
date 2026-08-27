@@ -185,7 +185,7 @@ def generate_html(books: list[dict], output_path: str, total_raw: int = 0):
         'rank':   f'이달의 추천 {i+1}위',
         'title':  b.get('도서명', ''),
         'author': f"{b.get('저자','')} · {b.get('출판사','')} · {b.get('출판일','')}",
-        'bio':    '',
+        'bio':    b.get('_저자소개', ''),
         'desc':   b.get('책 내용', '')[:200],
         'image':  b.get('이미지', ''),
         'link':   b.get('링크', ''),
