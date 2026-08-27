@@ -779,6 +779,8 @@ function parseDate(s){{
   if(!s) return '';
   const m=s.match(/(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\\s+(\\d{{1,2}}),?\\s+(\\d{{4}})/i);
   if(m){{const mo={{'jan':'01','feb':'02','mar':'03','apr':'04','may':'05','jun':'06','jul':'07','aug':'08','sep':'09','oct':'10','nov':'11','dec':'12'}};return m[3]+'-'+mo[m[1].slice(0,3).toLowerCase()]+'-'+m[2].padStart(2,'0');}}
+  if(/^\\d{{8}}$/.test(s)) return s.slice(0,4)+'-'+s.slice(4,6)+'-'+s.slice(6,8);
+  if(/^\\d{{4}}$/.test(s)) return s+'-12-31';
   return s.replace(/\\./g,'-');
 }}
 
@@ -796,9 +798,12 @@ function filtered(){{
 }}
 
 function getSorted(){{
+  const _idx=new Map(ALL.map((b,i)=>[b,i]));
   return filtered().sort((a,b)=>{{
     if(sortKey==='score') return (b['_score']||0)-(a['_score']||0);
-    return (parseDate(b['출판일'])||'0').localeCompare(parseDate(a['출판일'])||'0');
+    const c=(parseDate(b['출판일'])||'0').localeCompare(parseDate(a['출판일'])||'0');
+    if(c!==0) return c;
+    return (_idx.get(b)||0)-(_idx.get(a)||0);
   }});
 }}
 
