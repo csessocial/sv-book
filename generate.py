@@ -4,7 +4,7 @@ import sys
 import os
 import json
 import webbrowser
-from datetime import datetime
+from datetime import datetime, timedelta
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -91,6 +91,33 @@ def select_featured(books: list[dict], n: int = 5) -> list[dict]:
         base = _re.split(r'[:\-—–|/(]', b.get('도서명', ''))[0]
         return _re.sub(r'[^가-힣a-zA-Z0-9]', '', base).lower()
 
+    # 이달의 추천은 "최근 N개월 발간 신간" 위주로 제한
+    FEATURED_MONTHS = 3
+    _cutoff = datetime.now() - timedelta(days=FEATURED_MONTHS * 30)
+
+    def _pdt(s):
+        s = (s or '').strip()
+        m = _re.match(r'(\d{4})\.(\d{1,2})(?:\.(\d{1,2}))?', s)
+        if m:
+            try:
+                return datetime(int(m.group(1)), int(m.group(2)), int(m.group(3) or 1))
+            except Exception:
+                return None
+        if _re.fullmatch(r'\d{8}', s):
+            try:
+                return datetime(int(s[:4]), int(s[4:6]), int(s[6:8]))
+            except Exception:
+                return None
+        return None
+
+    def _recent(b):
+        # 국회도서관 '금주의 신간'은 연도표기('2026')여도 최근 3개월 수집분이라 최신으로 인정
+        s = (b.get('출판일', '') or '').strip()
+        if _re.fullmatch(r'\d{4}', s):
+            return True
+        dt = _pdt(s)
+        return dt is not None and dt >= _cutoff
+
     # 지난 추천 이력 로드 (매번 새 5권으로 물갈이)
     hist_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "featured_history.json")
     history = []
@@ -135,23 +162,29 @@ def select_featured(books: list[dict], n: int = 5) -> list[dict]:
                 sel.append(b)
         return sel[:n]
 
-    # 지난 추천작은 제외하고 신선한 후보로 우선 선정
-    fresh = [b for b in uniq if _key(b) not in hist_set]
+    # 최근 3개월 발간 신간 우선(오래된 책 제외) + 지난 추천작 제외
+    recent = [b for b in uniq if _recent(b)]
+    fresh = [b for b in recent if _key(b) not in hist_set]
     selected = _pick(fresh)
-    if len(selected) < n:  # 신선 후보 부족 시 전체에서 보충 (항상 n권 유지)
-        for b in _pick(uniq):
+    if len(selected) < n:  # 부족 시 최근분 전체 → 그래도 부족하면 오래된 것까지 보충(항상 n권)
+        for pool in (recent, uniq):
+            for b in _pick(pool):
+                if len(selected) >= n:
+                    break
+                if b not in selected:
+                    selected.append(b)
             if len(selected) >= n:
                 break
-            if b not in selected:
-                selected.append(b)
         selected = selected[:n]
 
-    # 이력 갱신·저장 (다음 실행 때 이번 추천작 제외). 모든 후보를 돌면 초기화
+    # 이력 갱신·저장 (다음 실행 때 이번 추천작 제외). 최근 후보 소진 시 초기화
     picked_keys = [_key(b) for b in selected]
-    all_keys = {_key(b) for b in uniq}
-    new_hist = list(dict.fromkeys(history + picked_keys))
-    if all_keys and set(new_hist) >= all_keys:
+    recent_keys = {_key(b) for b in recent}
+    remaining = [b for b in recent if _key(b) not in (hist_set | set(picked_keys))]
+    if recent_keys and not remaining:
         new_hist = picked_keys
+    else:
+        new_hist = list(dict.fromkeys(history + picked_keys))
     try:
         with open(hist_path, "w", encoding="utf-8") as f:
             json.dump(new_hist, f, ensure_ascii=False, indent=1)
