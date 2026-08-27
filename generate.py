@@ -16,6 +16,41 @@ def _norm_title(t):
     t = _re.split(r'[:\-—–|/]', t)[0]
     return _re.sub(r'[^가-힣a-zA-Z0-9]', '', t).lower()
 
+
+# 저자 약력 서술에 쓰이는 인물 키워드 (책 주제어보다 사람 소개에 등장)
+_PERSON_KW = ("교수", "석좌", "박사", "연구원", "연구소", "소장", "원장", "저널리스트",
+              "기자", "작가", "평론가", "저술가", "분석가", "애널리스트", "이코노미스트",
+              "칼럼니스트", "사학자", "경제학자", "정치학자", "사회학자", "물리학자",
+              "심리학자", "역사학자", "노벨", "퓰리처", "석학")
+
+
+def _author_blurb(book: dict) -> str:
+    """책 소개(네이버 등 원문)에서 저자를 소개하는 문장 한 줄을 추출. 없으면 ''.
+    국회도서관 '책 요약'처럼 저자 정보가 없는 소개문은 빈 문자열이 되어 카드에서 숨겨짐.
+    """
+    desc = (book.get("책 내용") or "").strip()
+    if not desc:
+        return ""
+    raw = _re.split(r"\(", book.get("저자", ""))[0]
+    names = [t.strip() for t in _re.split(r"[\^,·/]|외|지음", raw) if len(t.strip()) >= 2]
+    sents = [s.strip() for s in _re.split(r"(?<=[.!?])\s+|\n", desc) if s.strip()]
+    best, best_score = "", -1
+    for s in sents:
+        if not (8 <= len(s) <= 100):
+            continue
+        has_name = any(n and n in s for n in names)
+        has_marker = ("저자" in s) or ("지은이" in s) or ("글쓴이" in s)
+        kw = sum(1 for k in _PERSON_KW if k in s)
+        if not (has_name or has_marker or kw >= 1):
+            continue
+        score = (3 if has_name else 0) + (2 if has_marker else 0) + kw
+        if score > best_score:
+            best, best_score = s, score
+    b = best.strip().strip("“”\"'").rstrip(".。… ")
+    if len(b) > 76:
+        b = b[:76].rstrip() + "…"
+    return b
+
 def collect(sources: list[str]) -> list[dict]:
     all_books = []
     seen = set()
@@ -185,7 +220,7 @@ def generate_html(books: list[dict], output_path: str, total_raw: int = 0):
         'rank':   f'이달의 추천 {i+1}위',
         'title':  b.get('도서명', ''),
         'author': f"{b.get('저자','')} · {b.get('출판사','')} · {b.get('출판일','')}",
-        'bio':    b.get('_저자소개', ''),
+        'bio':    b.get('_저자소개') or _author_blurb(b),
         'desc':   b.get('책 내용', '')[:200],
         'image':  b.get('이미지', ''),
         'link':   b.get('링크', ''),
