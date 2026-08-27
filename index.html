@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SV Book — 2026.08.26 08:43</title>
+<title>SV Book — 2026.08.27 00:38</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -327,7 +327,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-
 <nav class="nav" id="mainNav">
   <div class="nav-inner">
     <div class="nav-logo">SV<span>.</span>Book</div>
-    <span class="nav-meta">2026.08.26 08:43 기준 · 525권</span>
+    <span class="nav-meta">2026.08.27 00:38 기준 · 525권</span>
     <div class="nav-actions">
       <button class="nav-btn" onclick="document.getElementById('guideSection').scrollIntoView({behavior:'smooth'})">📖 가이드</button>
       <button class="nav-btn" onclick="openRefreshModal()">🔄 재수집</button>
@@ -756,7 +756,7 @@ function downloadCSV(){
   books.forEach((b,i)=>rows.push([i+1,b['_category']||'',b['매체명']||'',b['도서명']||'',b['저자']||'',b['책 내용']||'',b['출판사']||'',b['출판일']||'',b['링크']||'']));
   const csv='\uFEFF'+rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');
   const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
-  a.download='SV_Book_20260826.csv';a.click();
+  a.download='SV_Book_20260827.csv';a.click();
 }
 
 // 모달
