@@ -86,7 +86,29 @@ def select_featured(books: list[dict], n: int = 5) -> list[dict]:
         is_curated = int(any(ct in title  for ct in CURATED_TITLES))
         return (is_scholar, is_curated, _pub_dt(b))
 
-    candidates.sort(key=_rank, reverse=True)
+    def _key(b):
+        # 부제·괄호 제거 후 정규화 — 같은 책의 소스별 중복 판별용
+        base = _re.split(r'[:\-—–|/(]', b.get('도서명', ''))[0]
+        return _re.sub(r'[^가-힣a-zA-Z0-9]', '', base).lower()
+
+    # 지난 추천 이력 로드 (매번 새 5권으로 물갈이)
+    hist_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "featured_history.json")
+    history = []
+    if os.path.exists(hist_path):
+        try:
+            with open(hist_path, "r", encoding="utf-8") as f:
+                history = json.load(f)
+        except Exception:
+            history = []
+    hist_set = set(history)
+
+    # 중복 제거(제목 기준, 순위 높은 것 우선)
+    uniq, seen = [], set()
+    for b in sorted(candidates, key=_rank, reverse=True):
+        k = _key(b)
+        if k and k not in seen:
+            seen.add(k)
+            uniq.append(b)
 
     TOPIC_MAP = [
         (['AI', '인공지능', '디지털', '로봇', '알고리즘'], 'AI'),
@@ -96,22 +118,45 @@ def select_featured(books: list[dict], n: int = 5) -> list[dict]:
         (['사회', '공동체', '연대', '불평등'],              '사회'),
     ]
 
-    selected, used_topics = [], []
-    for b in candidates:
-        if len(selected) >= n:
-            break
-        txt = b.get('도서명', '') + ' ' + b.get('책 내용', '')
-        topic = next((lbl for keys, lbl in TOPIC_MAP if any(k in txt for k in keys)), 'OTHER')
-        if used_topics.count(topic) < 2:
-            selected.append(b)
-            used_topics.append(topic)
+    def _pick(pool):
+        sel, used = [], []
+        for b in pool:
+            if len(sel) >= n:
+                break
+            txt = b.get('도서명', '') + ' ' + b.get('책 내용', '')
+            topic = next((lbl for keys, lbl in TOPIC_MAP if any(k in txt for k in keys)), 'OTHER')
+            if used.count(topic) < 2:
+                sel.append(b)
+                used.append(topic)
+        for b in pool:  # 다양성 조건으로 못 채웠으면 순서대로 보충
+            if len(sel) >= n:
+                break
+            if b not in sel:
+                sel.append(b)
+        return sel[:n]
 
-    # 다양성 조건으로 못 채웠으면 순서대로 보충
-    for b in candidates:
-        if len(selected) >= n:
-            break
-        if b not in selected:
-            selected.append(b)
+    # 지난 추천작은 제외하고 신선한 후보로 우선 선정
+    fresh = [b for b in uniq if _key(b) not in hist_set]
+    selected = _pick(fresh)
+    if len(selected) < n:  # 신선 후보 부족 시 전체에서 보충 (항상 n권 유지)
+        for b in _pick(uniq):
+            if len(selected) >= n:
+                break
+            if b not in selected:
+                selected.append(b)
+        selected = selected[:n]
+
+    # 이력 갱신·저장 (다음 실행 때 이번 추천작 제외). 모든 후보를 돌면 초기화
+    picked_keys = [_key(b) for b in selected]
+    all_keys = {_key(b) for b in uniq}
+    new_hist = list(dict.fromkeys(history + picked_keys))
+    if all_keys and set(new_hist) >= all_keys:
+        new_hist = picked_keys
+    try:
+        with open(hist_path, "w", encoding="utf-8") as f:
+            json.dump(new_hist, f, ensure_ascii=False, indent=1)
+    except Exception:
+        pass
 
     return selected[:n]
 
