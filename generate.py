@@ -46,10 +46,11 @@ def collect(sources: list[str]) -> list[dict]:
     return all_books
 
 
-def select_featured(books: list[dict], n: int = 5) -> list[dict]:
-    """관련도 5점 도서 중 원장님 선호 패턴으로 이달의 추천 자동 선정.
-    우선순위: 해외 석학 저자 → CURATED 목록 수록 → 최신 출판일
-    카테고리 다양성: 동일 토픽 최대 2권
+def select_featured(books: list[dict], n: int = 10) -> list[dict]:
+    """이달의 추천: 최근 3개월 발간 신간(관련도 5점)만 최대 n권 노출.
+    - 우선순위: 해외 석학 저자 → CURATED 목록 수록 → 최신 출판일
+    - featured_history.json = "제외 목록"(이미 선정해 다시 안 띄울 책 제목)
+    - 최근 신간이 n권보다 적으면 있는 만큼만 노출(오래된 책으로 채우지 않음)
     """
     # 해외 석학 저자 목록 (sv_filter.score_book 내부와 동일하게 유지)
     KNOWN_SCHOLARS = [
@@ -118,7 +119,7 @@ def select_featured(books: list[dict], n: int = 5) -> list[dict]:
         dt = _pdt(s)
         return dt is not None and dt >= _cutoff
 
-    # 지난 추천 이력 로드 (매번 새 5권으로 물갈이)
+    # 제외 목록 로드 (featured_history.json = 이미 선정해 다시 안 띄울 책 제목들)
     hist_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "featured_history.json")
     history = []
     if os.path.exists(hist_path):
@@ -162,34 +163,13 @@ def select_featured(books: list[dict], n: int = 5) -> list[dict]:
                 sel.append(b)
         return sel[:n]
 
-    # 최근 3개월 발간 신간 우선(오래된 책 제외) + 지난 추천작 제외
+    # 최근 3개월 발간 신간(5점)만, 제외목록(featured_history) 빼고 최대 n권 노출.
+    # 최근 신간이 n권보다 적으면 "있는 만큼"만 보여줌(오래된 책으로 억지로 채우지 않음).
     recent = [b for b in uniq if _recent(b)]
     fresh = [b for b in recent if _key(b) not in hist_set]
     selected = _pick(fresh)
-    if len(selected) < n:  # 부족 시 최근분 전체 → 그래도 부족하면 오래된 것까지 보충(항상 n권)
-        for pool in (recent, uniq):
-            for b in _pick(pool):
-                if len(selected) >= n:
-                    break
-                if b not in selected:
-                    selected.append(b)
-            if len(selected) >= n:
-                break
-        selected = selected[:n]
-
-    # 이력 갱신·저장 (다음 실행 때 이번 추천작 제외). 최근 후보 소진 시 초기화
-    picked_keys = [_key(b) for b in selected]
-    recent_keys = {_key(b) for b in recent}
-    remaining = [b for b in recent if _key(b) not in (hist_set | set(picked_keys))]
-    if recent_keys and not remaining:
-        new_hist = picked_keys
-    else:
-        new_hist = list(dict.fromkeys(history + picked_keys))
-    try:
-        with open(hist_path, "w", encoding="utf-8") as f:
-            json.dump(new_hist, f, ensure_ascii=False, indent=1)
-    except Exception:
-        pass
+    if not selected:            # 제외로 모두 빠지면 최근 신간이라도 노출(빈 캐러셀 방지)
+        selected = _pick(recent)
 
     return selected[:n]
 
@@ -200,7 +180,7 @@ def generate_html(books: list[dict], output_path: str, total_raw: int = 0):
     filename_date = datetime.now().strftime("%Y%m%d")
 
     # 이달의 추천 자동 선정 (_score 5점 중 원장님 선호 패턴)
-    featured_raw = select_featured(books, n=5)
+    featured_raw = select_featured(books, n=10)
     featured_json = json.dumps([{
         'rank':   f'이달의 추천 {i+1}위',
         'title':  b.get('도서명', ''),
@@ -788,7 +768,7 @@ let curSlide=0;
         <div class="c-title">${{b.title}}</div>
         <div class="c-author">${{b.author}}</div>
         <div class="c-desc">${{b.desc}}</div>
-        <div class="c-bio">✍️ ${{b.bio}}</div>
+        ${{b.bio ? `<div class="c-bio">✍️ ${{b.bio}}</div>` : ''}}
         <a class="c-link" href="${{b.link}}" target="_blank">자세히 보기 →</a>
       </div>
     </div>`).join('');
