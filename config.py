@@ -1,13 +1,17 @@
 # =============================================
 # SV Book Automation - 설정 파일
 # =============================================
+import os
 
 # 국회도서관 Open API 키
 NL_API_KEY = "YOUR_NL_API_KEY_HERE"
 
-# 네이버 책 검색 API (책 소개 보완용)
+# 네이버 책 검색 API — 2026.07.31 서비스 종료됨(사용 불가). 카카오로 대체.
 NAVER_CLIENT_ID     = "JLKKvYTPT41YH_j2kzjW"
 NAVER_CLIENT_SECRET = "FSOzICIszn"
+
+# 카카오 책 검색 API (네이버 대체) — REST 키를 환경변수/Secrets(KAKAO_REST_KEY)로 주입
+KAKAO_REST_KEY = os.environ.get("KAKAO_REST_KEY", "")
 
 # Google Sheets 설정
 SPREADSHEET_ID = "YOUR_SPREADSHEET_ID_HERE"  # URL에서 /d/ 뒤의 ID

@@ -55,8 +55,9 @@ def collect(sources: list[str]) -> list[dict]:
     all_books = []
     seen = set()
 
-    SRC_LABELS = {"kyobo": "교보문고", "amazon": "Amazon", "nanet": "국회도서관", "naver": "네이버 도서"}
-    steps = [s for s in ["kyobo", "amazon", "nanet", "naver"] if s in sources]
+    SRC_LABELS = {"kyobo": "교보문고", "amazon": "Amazon", "nanet": "국회도서관",
+                  "naver": "네이버 도서", "kakao": "카카오 책"}
+    steps = [s for s in ["kyobo", "amazon", "nanet", "naver", "kakao"] if s in sources]
     for i, src in enumerate(steps, 1):
         print(f"[{i}/{len(steps)}] {SRC_LABELS[src]} 수집 중...")
         if src == "kyobo":
@@ -65,6 +66,8 @@ def collect(sources: list[str]) -> list[dict]:
             from amazon_scraper import fetch_all_books
         elif src == "naver":
             from naver_scraper import fetch_all_books
+        elif src == "kakao":
+            from kakao_scraper import fetch_all_books
         else:
             from nanet_scraper import fetch_all_books
         try:
@@ -1248,7 +1251,8 @@ if __name__ == "__main__":
     print("  SV Book 수집 시작")
     print("=" * 45)
 
-    sources = ["kyobo", "nanet", "naver"]
+    # 네이버 책 API는 2026.07.31 종료 → 카카오 책으로 대체 (KAKAO_REST_KEY 필요)
+    sources = ["kyobo", "nanet", "kakao"]
     raw_books = collect(sources)
     print(f"\n총 {len(raw_books)}건 수집. 필터링 중...")
 
